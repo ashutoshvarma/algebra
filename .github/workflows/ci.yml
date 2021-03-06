@@ -198,8 +198,15 @@ jobs:
           
       - name: Patch cargo.toml
         run: |
-          echo "[source.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
-          echo "registry = 'algebra'" >> Cargo.toml
+          echo "[patch.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
+          echo "ark-ff = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-serialize = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ff-macros = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
+          tail -n 20 Cargo.toml
           
       - name: Test
         uses: actions-rs/cargo@v1
