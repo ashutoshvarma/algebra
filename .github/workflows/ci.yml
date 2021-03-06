@@ -199,7 +199,7 @@ jobs:
       - name: Patch cargo.toml
         run: |
           echo "[source.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
-          echo "registry = 'algebra'"
+          echo "registry = 'algebra'" >> Cargo.toml
           
       - name: Test
         uses: actions-rs/cargo@v1
