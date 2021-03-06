@@ -204,7 +204,6 @@ jobs:
           echo "ark-ff-macros = { path = 'algebra' }" >> Cargo.toml
           echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
           echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
           echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
           tail -n 20 Cargo.toml
           
