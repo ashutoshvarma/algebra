@@ -205,7 +205,8 @@ jobs:
           echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
           echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
           echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
-          tail -n 20 Cargo.toml
+          pwd
+          ls -lah algebra
           
       - name: Test
         uses: actions-rs/cargo@v1
