@@ -179,7 +179,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ../algebra
+          repository: arkworks-rs/algebra
+          path: algebra
           
       - name: A
         run: |
