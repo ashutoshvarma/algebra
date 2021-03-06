@@ -206,12 +206,12 @@ jobs:
       - name: Patch cargo.toml
         run: |
           echo "[patch.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
-          echo "ark-ff = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-serialize = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-ff-macros = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
-          echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ff = { path = 'algebra/ff' }" >> Cargo.toml
+          echo "ark-serialize = { path = 'algebra/serialize' }" >> Cargo.toml
+          echo "ark-ff-macros = { path = 'algebra/ff-macros' }" >> Cargo.toml
+          echo "ark-ff-asm = { path = 'algebra/ff-asm' }" >> Cargo.toml
+          echo "ark-ec = { path = 'algebra/ec' }" >> Cargo.toml
+          echo "ark-algebra-test-templates = { path = 'algebra/test-templates' }" >> Cargo.toml
           pwd
           ls -lah
         
