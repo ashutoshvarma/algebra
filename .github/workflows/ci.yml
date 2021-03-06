@@ -174,45 +174,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: algebra_local
+          path: algebra
           
       - name: Checkout curves
         uses: actions/checkout@v2
         with:
           repository: arkworks-rs/curves
           path: curves
+
+      - name: Install Rust (${{ matrix.rust }})
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            algebra/target
+            curves/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           
+      - name: Patch cargo.toml
+        run: |
+          cd algebra
+          echo "[patch.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
+          echo "ark-ff = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-serialize = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ff-macros = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
+          echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
+          pwd
+          ls -lah
+
       - name: A
-        run: ls -lah
-
-#       - name: Install Rust (${{ matrix.rust }})
-#         uses: actions-rs/toolchain@v1
-#         with:
-#           profile: minimal
-#           toolchain: ${{ matrix.rust }}
-#           override: true
-
-#       - uses: actions/cache@v2
-#         with:
-#           path: |
-#             ~/.cargo/registry
-#             ~/.cargo/git
-#             target
-#           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          
-#       - name: Patch cargo.toml
-#         run: |
-#           echo "[patch.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
-#           echo "ark-ff = { path = 'algebra' }" >> Cargo.toml
-#           echo "ark-serialize = { path = 'algebra' }" >> Cargo.toml
-#           echo "ark-ff-macros = { path = 'algebra' }" >> Cargo.toml
-#           echo "ark-ff-asm = { path = 'algebra' }" >> Cargo.toml
-#           echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
-#           echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
-#           pwd
-#           ls -lah
-#           ls -lah algebra
-          
+        run: |
+          pwd
+          ls -lah
+        
 #       - name: Test
 #         uses: actions-rs/cargo@v1
 #         with:
