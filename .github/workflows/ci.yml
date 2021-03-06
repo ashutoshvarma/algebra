@@ -200,7 +200,7 @@ jobs:
           
       - name: Patch cargo.toml
         run: |
-          cd algebra
+          cd curves
           echo "[patch.'https://github.com/arkworks-rs/algebra']" >> Cargo.toml
           echo "ark-ff = { path = 'algebra' }" >> Cargo.toml
           echo "ark-serialize = { path = 'algebra' }" >> Cargo.toml
@@ -210,16 +210,18 @@ jobs:
           echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
           pwd
           ls -lah
+          
 
       - name: A
         run: |
           pwd
           ls -lah
         
-#       - name: Test
-#         uses: actions-rs/cargo@v1
-#         with:
-#             command: test
-#             args: "--workspace \
-#                    --all-features \
-#                    --exclude curve-benches"
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+            command: test
+            args: "--workspace \
+                   --all-features \
+                   --exclude curve-benches"
+        working-directory: ./curves
