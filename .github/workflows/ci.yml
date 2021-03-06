@@ -206,6 +206,7 @@ jobs:
           echo "ark-ec = { path = 'algebra' }" >> Cargo.toml
           echo "ark-algebra-test-templates = { path = 'algebra' }" >> Cargo.toml
           pwd
+          ls -lah
           ls -lah algebra
           
       - name: Test
