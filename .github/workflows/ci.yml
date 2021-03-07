@@ -211,7 +211,7 @@ jobs:
           echo      "ark-ff-macros = { path = 'algebra/ff-macros' }"                       >> Cargo.toml
           echo      "ark-ff-asm = { path = 'algebra/ff-asm' }"                             >> Cargo.toml
           echo      "ark-ec = { path = 'algebra/ec' }"                                     >> Cargo.toml
-          echO      "ark-algebra-test-templates = { path = 'algebra/test-templates' }"     >> Cargo.toml
+          echo      "ark-algebra-test-templates = { path = 'algebra/test-templates' }"     >> Cargo.toml
         
       - name: Check examples
         uses: actions-rs/cargo@v1
