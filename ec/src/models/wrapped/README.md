@@ -1,5 +1,12 @@
 Current Status for Wrapped Models
 
+```rust
+pub use crate::wrapped::twisted_edwards_extended::{GroupAffine, GroupProjective};
+```
+```rust
+pub use crate::wrapped::short_weierstrass_jacobian::{GroupAffine, GroupProjective};
+```
+
 ## GroupAffine
 
 ### Traits
@@ -15,41 +22,45 @@ Derivative traits
 
 Manual Impl
 
-- [ ] `PartialEq<GroupProjective<P>>`
-- [ ] `Display`
-- [ ] `Zeroize`
-- [ ] `Zero`
-- [ ] `Add<Self>`
-- [ ] `AddAssign<&'a Self>`
-- [ ] `Neg`
-- [ ] `ToBytes`
-- [ ] `FromBytes`
-- [ ] `Default`
-- [ ] `From<GroupProjective<P>>`
-- [ ] `CanonicalSerialize`
-- [ ] `CanonicalDeserialize`
-- [ ] `ToConstraintField<ConstraintF>`
-- [ ] `Sub` **(Only ED)**
-- [ ] `SubAssign` **(Only ED)**
-- [ ] `MulAssign` **(Only ED)**
-- [ ] `Distribution<GroupAffine<P>> for Standard` **(Only ED)**
+- [x] `PartialEq<GroupProjective<P>>`
+- [x] `Display`
+- [x] `Zeroize`
+- [x] `Zero`
+- [x] `Add<Self>`
+- [x] `AddAssign<&'a Self>` - Since `AddAssign` is not a bound in `AffineCurve` we might impl it separately for both models
+- [x] `Neg`
+- [x] `ToBytes`
+- [x] `FromBytes`
+- [x] `Default`
+- [x] `From<GroupProjective<P>>`
+- [x] `CanonicalSerialize`
+- [x] `CanonicalDeserialize`
+- [x] `ToConstraintField<ConstraintF>`
+- [x] `Sub` **(Only ED)**
+- [x] `SubAssign` **(Only ED)**
+- [x] `MulAssign<P::ScalarField>` **(Only ED)**
+- [x] `Distribution<GroupAffine<P>> for Standard` **(Only ED)**
+- [x] `core::str::FromStr` **(Only ED)**
 
 ### AffineCurve Trait
 
-- [ ] `prime_subgroup_generator()`
-- [ ] `from_random_bytes()`
-- [ ] `mul()`
-- [ ] `mul_by_cofactor_to_projective()`
-- [ ] `mul_by_cofactor_inv()`
+- [x] `prime_subgroup_generator()`
+- [x] `from_random_bytes()`
+- [x] `mul()`
+- [x] `mul_by_cofactor_to_projective()`
+- [x] `mul_by_cofactor_inv()`x
 
 ### Impl GroupAffine
 
-- [ ] `new()`
-- [ ] `scale_by_cofactor()`
-- [ ] `get_point_from_x()`
-- [ ] `is_on_curve()`
-- [ ] `is_in_correct_subgroup_assuming_on_curve()`
-- [ ] `mul_bits()` **(Only ED)**
+- [x] `new()`
+
+Need Separate wrap for both models
+
+- [x] `scale_by_cofactor()`
+- [x] `get_point_from_x()`
+- [x] `is_on_curve()`
+- [x] `is_in_correct_subgroup_assuming_on_curve()`
+- [x] `mul_bits()`
 
 ### Macro
 
@@ -73,40 +84,39 @@ Derivative traits
 
 Manual Impl
 
-- [ ] `PartialEq<GroupAffine<P>>`
+- [x] `PartialEq<GroupAffine<P>>`
 - [ ] `Display`
 - [ ] `Eq` **(Only SW)**
 - [ ] `PartialEq`
-- [ ] `Distribution<GroupProjective<P>> for Standard`
-- [ ] `ToBytes`
-- [ ] `FromBytes`
-- [ ] `Default`
-- [ ] `Zeroize`
-- [ ] `Zero`
-- [ ] `Neg`
-- [ ] `Add`
-- [ ] `AddAssign`
-- [ ] `Sub`
-- [ ] `SubAssign`
-- [ ] `MulAssign`
-- [ ] `From<GroupAffine<P>>`
-- [ ] `CanonicalSerialize`
-- [ ] `CanonicalDeserialize`
-- [ ] `ToConstraintField<ConstraintF>`
-- [ ] `core::str::FromStr` **(Only ED)**
+- [x] `Distribution<GroupProjective<P>> for Standard`
+- [x] `ToBytes`
+- [x] `FromBytes`
+- [x] `Default`
+- [x] `Zeroize`
+- [x] `Zero`
+- [x] `Neg`
+- [x] `Add`
+- [x] `AddAssign`
+- [x] `Sub`
+- [x] `SubAssign`
+- [x] `MulAssign`
+- [x] `From<GroupAffine<P>>`
+- [x] `CanonicalSerialize`
+- [x] `CanonicalDeserialize`
+- [x] `ToConstraintField<ConstraintF>`
 
 ### Projective
 
-- [ ] `prime_subgroup_generator()`
-- [ ] `is_normalized()`
+- [x] `prime_subgroup_generator()`
+- [x] `is_normalized()`
 - [ ] `batch_normalization()`
-- [ ] `double_in_place()`
-- [ ] `add_assign_mixed()`
+- [x] `double_in_place()`
+- [x] `add_assign_mixed()`
 
 ### impl GroupProjective
 
-- [ ] `new()`
+- [x] `new()`
 
 ### Macro
 
-- [ ] `ark_ff::impl_additive_ops_from_ref`
+- [x] `ark_ff::impl_additive_ops_from_ref`
