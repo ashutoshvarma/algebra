@@ -2,11 +2,11 @@ use crate::models::twisted_edwards_extended::{
     GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
 };
 use crate::models::TEModelParameters;
-use crate::{AffineCurve, ProjectiveCurve};
+// use crate::{AffineCurve, ProjectiveCurve};
 
 use crate::wrapped::Wrapped;
 pub use crate::wrapped::{GroupAffine, GroupProjective};
-use ark_ff::PrimeField;
+// use ark_ff::PrimeField;
 use ark_std::ops::{AddAssign, MulAssign, Sub, SubAssign};
 
 use ark_std::rand::{
@@ -18,10 +18,12 @@ use ark_std::rand::{
 
 // wrap inherent methods for short weierstrass group affine
 impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
+    #[allow(dead_code)]
     fn scale_by_cofactor(&self) -> GroupProjective<GroupProjectiveED<P>> {
         GroupProjective(GroupAffineED::<P>::scale_by_cofactor(self.wrapped()))
     }
 
+    #[allow(dead_code)]
     pub(crate) fn mul_bits(
         &self,
         bits: impl Iterator<Item = bool>,
@@ -29,6 +31,7 @@ impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
         GroupProjective(GroupAffineED::<P>::mul_bits(self.wrapped(), bits))
     }
 
+    #[allow(dead_code)]
     fn get_point_from_x(x: P::BaseField, greatest: bool) -> Option<Self> {
         match GroupAffineED::<P>::get_point_from_x(x, greatest) {
             Some(v) => Some(GroupAffine(v)),
@@ -85,7 +88,7 @@ where
 {
     type Err = ();
 
-    fn from_str(mut s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match GroupAffineED::<P>::from_str(s) {
             Ok(v) => Ok(GroupAffine(v)),
             Err(e) => Err(e),

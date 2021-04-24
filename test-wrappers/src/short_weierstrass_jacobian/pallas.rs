@@ -5,10 +5,7 @@ use ark_ec::{
 use ark_pallas::{Affine, Projective};
 use ark_std::{rand::Rng, test_rng};
 
-use ark_algebra_test_templates::{
-    curves::{curve_tests, sw_tests},
-    groups::group_test,
-};
+use ark_algebra_test_templates::{curves::curve_tests, groups::group_test};
 type PallasAffine = GroupAffine<Affine>;
 type PallasProjective = GroupProjective<Projective>;
 

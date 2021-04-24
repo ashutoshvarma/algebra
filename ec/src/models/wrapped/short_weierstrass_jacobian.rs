@@ -9,10 +9,12 @@ use ark_std::ops::AddAssign;
 
 // wrap inherent methods for short weierstrass group affine
 impl<P: SWModelParameters> GroupAffine<GroupAffineSW<P>> {
+    #[allow(dead_code)]
     fn scale_by_cofactor(&self) -> GroupProjective<GroupProjectiveSW<P>> {
         GroupProjective(GroupAffineSW::<P>::scale_by_cofactor(self.wrapped()))
     }
 
+    #[allow(dead_code)]
     pub(crate) fn mul_bits(
         &self,
         bits: impl Iterator<Item = bool>,
@@ -20,6 +22,7 @@ impl<P: SWModelParameters> GroupAffine<GroupAffineSW<P>> {
         GroupProjective(GroupAffineSW::<P>::mul_bits(self.wrapped(), bits))
     }
 
+    #[allow(dead_code)]
     fn get_point_from_x(x: P::BaseField, greatest: bool) -> Option<Self> {
         match GroupAffineSW::<P>::get_point_from_x(x, greatest) {
             Some(v) => Some(GroupAffine(v)),

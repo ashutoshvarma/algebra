@@ -108,6 +108,7 @@ where
 }
 
 impl<C: AffineCurve> GroupAffine<C> {
+    #[allow(dead_code)]
     fn new(inner: C) -> Self {
         GroupAffine(inner)
     }
@@ -191,14 +192,14 @@ impl<C: AffineCurve> Neg for GroupAffine<C> {
 
 impl<C: AffineCurve> ToBytes for GroupAffine<C> {
     #[inline]
-    fn write<W: Write>(&self, mut writer: W) -> IoResult<()> {
+    fn write<W: Write>(&self, writer: W) -> IoResult<()> {
         C::write(self.wrapped(), writer)
     }
 }
 
 impl<C: AffineCurve> FromBytes for GroupAffine<C> {
     #[inline]
-    fn read<R: Read>(mut reader: R) -> IoResult<Self> {
+    fn read<R: Read>(reader: R) -> IoResult<Self> {
         match C::read(reader) {
             Ok(v) => Ok(GroupAffine(v)),
             Err(e) => Err(e),
@@ -237,7 +238,7 @@ where
 
 impl<C: ProjectiveCurve + ToBytes> ToBytes for GroupProjective<C> {
     #[inline]
-    fn write<W: Write>(&self, mut writer: W) -> IoResult<()> {
+    fn write<W: Write>(&self, writer: W) -> IoResult<()> {
         // C::write(&self.0, writer)
         self.wrapped().write(writer)
     }
@@ -245,7 +246,7 @@ impl<C: ProjectiveCurve + ToBytes> ToBytes for GroupProjective<C> {
 
 impl<C: ProjectiveCurve + FromBytes> FromBytes for GroupProjective<C> {
     #[inline]
-    fn read<R: Read>(mut reader: R) -> IoResult<Self> {
+    fn read<R: Read>(reader: R) -> IoResult<Self> {
         match C::read(reader) {
             Ok(v) => Ok(GroupProjective(v)),
             Err(e) => Err(e),
@@ -411,7 +412,7 @@ impl<C: AffineCurve> CanonicalSerialize for GroupAffine<C> {
     }
 
     #[inline]
-    fn serialize_uncompressed<W: Write>(&self, mut writer: W) -> Result<(), SerializationError> {
+    fn serialize_uncompressed<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
         // self.wrapped().serialize_uncompressed(writer)
         C::serialize_uncompressed(self.wrapped(), writer)
     }
@@ -437,7 +438,7 @@ impl<C: ProjectiveCurve> CanonicalSerialize for GroupProjective<C> {
     }
 
     #[inline]
-    fn serialize_uncompressed<W: Write>(&self, mut writer: W) -> Result<(), SerializationError> {
+    fn serialize_uncompressed<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
         // self.wrapped().serialize_uncompressed(writer)
         C::serialize_uncompressed(self.wrapped(), writer)
     }
@@ -466,7 +467,7 @@ impl<C: AffineCurve> CanonicalDeserialize for GroupAffine<C> {
         }
     }
 
-    fn deserialize_unchecked<R: Read>(mut reader: R) -> Result<Self, SerializationError> {
+    fn deserialize_unchecked<R: Read>(reader: R) -> Result<Self, SerializationError> {
         match C::deserialize_unchecked(reader) {
             Ok(v) => Ok(GroupAffine(v)),
             Err(e) => Err(e),
@@ -491,7 +492,7 @@ impl<C: ProjectiveCurve> CanonicalDeserialize for GroupProjective<C> {
         }
     }
 
-    fn deserialize_unchecked<R: Read>(mut reader: R) -> Result<Self, SerializationError> {
+    fn deserialize_unchecked<R: Read>(reader: R) -> Result<Self, SerializationError> {
         match C::deserialize_unchecked(reader) {
             Ok(v) => Ok(GroupProjective(v)),
             Err(e) => Err(e),
