@@ -1,0 +1,48 @@
+[package]
+authors = ["arkworks contributors"]
+description = "A library for testing ark-ec wrappers types"
+homepage = "https://arkworks.rs"
+name = "ark-test-wrappers"
+repository = "https://github.com/arkworks-rs/algebra"
+version = "0.1.0"
+# documentation = "https://docs.rs/ark-test-curves/"
+categories = ["cryptography"]
+edition = "2018"
+include = ["Cargo.toml", "src", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+keywords = ["cryptography", "wrappers"]
+license = "MIT/Apache-2.0"
+
+[dependencies]
+ark-algebra-test-templates = {version = "^0.2.0", path = "../test-templates", default-features = false}
+ark-ec = {version = "^0.2.0", path = "../ec", default-features = false}
+ark-ff = {version = "^0.2.0", path = "../ff", default-features = false}
+ark-pallas = {version = "^0.2.0"}
+ark-std = {version = "^0.2.0", default-features = false}
+
+# [dev-dependencies]
+# ark-serialize = {version = "^0.2.0", path = "../serialize", default-features = false}
+
+
+
+
+# [features]
+# default = []
+
+# bw6_761 = ["ark-bw6-761"]
+
+# short_weierstrass_jacobian = ["bw6_761"]
+
+# asm = [ "ark-ff/asm" ]
+
+# parallel = [ "ark-ff/parallel", "ark-ec/parallel", "ark-std/parallel" ]
+
+# bls12_381_scalar_field = []
+# bls12_381_curve = [ "bls12_381_scalar_field" ]
+
+# mnt4_753_scalar_field = []
+# mnt4_753_base_field = []
+# mnt4_753_curve = [ "mnt4_753_scalar_field", "mnt4_753_base_field" ]
+
+# bn384_small_two_adicity_scalar_field = []
+# bn384_small_two_adicity_base_field = []
+# bn384_small_two_adicity_curve = [ "bn384_small_two_adicity_scalar_field", "bn384_small_two_adicity_base_field" ]
