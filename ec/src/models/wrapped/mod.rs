@@ -11,6 +11,7 @@ use ark_std::{
     fmt::{Display, Formatter, Result as FmtResult},
     io::{Read, Result as IoResult, Write},
     ops::{Add, AddAssign, MulAssign, Neg, Sub, SubAssign},
+    vec::Vec,
 };
 
 use num_traits::Zero;
@@ -78,6 +79,7 @@ impl<C: ProjectiveCurve> Wrapped for GroupProjective<C> {
 //     // PartialEq(bound = "C: AffineCurve"),
 //     // Eq(bound = "C: AffineCurve")
 // )]
+#[repr(transparent)]
 pub struct GroupAffine<C: AffineCurve>(pub C);
 
 impl<C: AffineCurve> Display for GroupAffine<C> {
@@ -220,6 +222,7 @@ impl<C: AffineCurve> Default for GroupAffine<C> {
 //     Debug(bound = "C: ProjectiveCurve"),
 //     Hash(bound = "C: ProjectiveCurve")
 // )]
+#[repr(transparent)]
 pub struct GroupProjective<C: ProjectiveCurve>(pub C);
 
 impl<C: ProjectiveCurve> Distribution<GroupProjective<C>> for Standard
@@ -307,7 +310,12 @@ where
     // Take inner type
     #[inline]
     fn batch_normalization(v: &mut [Self]) {
-        // C::batch_normalization(v)
+        // This is slow, should be changed to a tested "unsafe" impl after
+        // bench and profiling
+        let mut p_s = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
+        C::batch_normalization(&mut p_s);
+
+        v.iter_mut().zip(p_s).for_each(|(wg, g)| wg.set_wrapped(g));
     }
 
     fn double_in_place(&mut self) -> &mut Self {

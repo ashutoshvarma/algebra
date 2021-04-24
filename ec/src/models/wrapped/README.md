@@ -109,7 +109,7 @@ Manual Impl
 
 - [x] `prime_subgroup_generator()`
 - [x] `is_normalized()`
-- [ ] `batch_normalization()`
+- [x] `batch_normalization()`
 - [x] `double_in_place()`
 - [x] `add_assign_mixed()`
 
