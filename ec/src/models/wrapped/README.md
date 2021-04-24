@@ -13,12 +13,12 @@ pub use crate::wrapped::short_weierstrass_jacobian::{GroupAffine, GroupProjectiv
 
 Derivative traits
 
-- [ ] `Copy`
-- [ ] `Clone`
-- [ ] `PartialEq`
-- [ ] `Eq`
-- [ ] `Debug`
-- [ ] `Hash`
+- [x] `Copy`
+- [x] `Clone`
+- [x] `PartialEq`
+- [x] `Eq`
+- [x] `Debug`
+- [x] `Hash`
 
 Manual Impl
 
@@ -76,18 +76,18 @@ Need Separate wrap for both models
 
 Derivative traits
 
-- [ ] `Copy`
-- [ ] `Clone`
-- [ ] `Debug`
-- [ ] `Hash`
-- [ ] `Eq` **(Only ED)**
+- [x] `Copy`
+- [x] `Clone`
+- [x] `Debug`
+- [x] `Hash`
+- [x] `Eq` **(Only ED)**
 
 Manual Impl
 
 - [x] `PartialEq<GroupAffine<P>>`
-- [ ] `Display`
-- [ ] `Eq` **(Only SW)**
-- [ ] `PartialEq`
+- [x] `Display`
+- [x] `Eq` **(Only SW)**
+- [x] `PartialEq`
 - [x] `Distribution<GroupProjective<P>> for Standard`
 - [x] `ToBytes`
 - [x] `FromBytes`

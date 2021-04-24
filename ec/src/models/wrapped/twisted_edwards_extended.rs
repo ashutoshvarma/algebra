@@ -14,6 +14,8 @@ use ark_std::rand::{
     Rng,
 };
 
+// type _GroupAffine<P> = GroupAffine<GroupAffineED<P>>;
+
 // wrap inherent methods for short weierstrass group affine
 impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
     fn scale_by_cofactor(&self) -> GroupProjective<GroupProjectiveED<P>> {
@@ -75,7 +77,7 @@ impl<P: TEModelParameters> Distribution<GroupAffine<GroupAffineED<P>>> for Stand
     }
 }
 
-// ark_ff::impl_additive_ops_from_ref!(GroupAffine<GroupAffineED>, TEModelParameters);
+// ark_ff::impl_additive_ops_from_ref!(_GroupAffine, TEModelParameters);
 
 impl<P: TEModelParameters> core::str::FromStr for GroupAffine<GroupAffineED<P>>
 where

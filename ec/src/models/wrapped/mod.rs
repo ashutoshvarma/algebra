@@ -68,15 +68,16 @@ impl<C: ProjectiveCurve> Wrapped for GroupProjective<C> {
 }
 
 // #######################################################################
-#[derive(Derivative, PartialEq, Eq)]
-#[derivative(
-    Copy(bound = "C: AffineCurve"),
-    Clone(bound = "C: AffineCurve"),
-    Debug(bound = "C: AffineCurve"),
-    Hash(bound = "C: AffineCurve"),
-    // PartialEq(bound = "C: AffineCurve"),
-    // Eq(bound = "C: AffineCurve")
-)]
+#[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
+// #[derive(Derivative)]
+// #[derivative(
+//     Copy(bound = "C: AffineCurve"),
+//     Clone(bound = "C: AffineCurve"),
+//     Debug(bound = "C: AffineCurve"),
+//     Hash(bound = "C: AffineCurve"),
+//     // PartialEq(bound = "C: AffineCurve"),
+//     // Eq(bound = "C: AffineCurve")
+// )]
 pub struct GroupAffine<C: AffineCurve>(pub C);
 
 impl<C: AffineCurve> Display for GroupAffine<C> {
@@ -211,13 +212,14 @@ impl<C: AffineCurve> Default for GroupAffine<C> {
 }
 
 // GroupProjective STARTs
-#[derive(Eq, PartialEq, Display, Derivative)]
-#[derivative(
-    Copy(bound = "C: ProjectiveCurve"),
-    Clone(bound = "C: ProjectiveCurve"),
-    Debug(bound = "C: ProjectiveCurve"),
-    Hash(bound = "C: ProjectiveCurve")
-)]
+#[derive(Eq, PartialEq, Display, Copy, Clone, Debug, Hash)]
+// #[derive(Derivative)]
+// #[derivative(
+//     Copy(bound = "C: ProjectiveCurve"),
+//     Clone(bound = "C: ProjectiveCurve"),
+//     Debug(bound = "C: ProjectiveCurve"),
+//     Hash(bound = "C: ProjectiveCurve")
+// )]
 pub struct GroupProjective<C: ProjectiveCurve>(pub C);
 
 impl<C: ProjectiveCurve> Distribution<GroupProjective<C>> for Standard
