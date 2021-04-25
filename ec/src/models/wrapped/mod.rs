@@ -1,4 +1,4 @@
-use crate::{AffineCurve, ProjectiveCurve};
+use crate::{AffineCurve, PairingEngine, ProjectiveCurve};
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
@@ -497,5 +497,111 @@ impl<C: ProjectiveCurve> CanonicalDeserialize for GroupProjective<C> {
             Ok(v) => Ok(GroupProjective(v)),
             Err(e) => Err(e),
         }
+    }
+}
+
+// #########################################################
+
+// G1 Types
+pub type G1Affine<E> = GroupAffine<<E as PairingEngine>::G1Affine>;
+pub type G1Projective<E> = GroupProjective<<E as PairingEngine>::G1Projective>;
+
+#[derive(Clone, Debug)]
+pub struct G1Prepared<E: PairingEngine>(pub E::G1Prepared);
+
+impl<E: PairingEngine> From<G1Affine<E>> for G1Prepared<E> {
+    fn from(other: G1Affine<E>) -> Self {
+        G1Prepared(E::G1Prepared::from(other.0))
+    }
+}
+
+impl<E: PairingEngine> Default for G1Prepared<E> {
+    fn default() -> Self {
+        G1Prepared(E::G1Prepared::default())
+    }
+}
+
+impl<E: PairingEngine> ToBytes for G1Prepared<E> {
+    fn write<W: Write>(&self, writer: W) -> IoResult<()> {
+        self.0.write(writer)
+    }
+}
+
+// G2 Types
+pub type G2Affine<E> = GroupAffine<<E as PairingEngine>::G2Affine>;
+pub type G2Projective<E> = GroupProjective<<E as PairingEngine>::G2Projective>;
+
+#[derive(Clone, Debug)]
+pub struct G2Prepared<E: PairingEngine>(pub E::G2Prepared);
+
+impl<E: PairingEngine> From<G2Affine<E>> for G2Prepared<E> {
+    fn from(other: G2Affine<E>) -> Self {
+        G2Prepared(E::G2Prepared::from(other.0))
+    }
+}
+
+impl<E: PairingEngine> Default for G2Prepared<E> {
+    fn default() -> Self {
+        G2Prepared(E::G2Prepared::default())
+    }
+}
+
+impl<E: PairingEngine> ToBytes for G2Prepared<E> {
+    fn write<W: Write>(&self, writer: W) -> IoResult<()> {
+        self.0.write(writer)
+    }
+}
+
+// Pairing Curve
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+pub struct CurveWrapper<E: PairingEngine>(pub E);
+
+impl<E: PairingEngine> Wrapped for CurveWrapper<E> {
+    type WrapTarget = E;
+    fn wrapped(&self) -> &Self::WrapTarget {
+        &(self.0)
+    }
+    fn mut_wrapped(&mut self) -> &mut Self::WrapTarget {
+        &mut (self.0)
+    }
+    fn set_wrapped(&mut self, wrapped: Self::WrapTarget) {
+        self.0 = wrapped
+    }
+    fn new_wrap(inner: Self::WrapTarget) -> Self {
+        Self(inner)
+    }
+}
+
+impl<E: PairingEngine> PairingEngine for CurveWrapper<E>
+where
+    Standard: Distribution<E::G1Projective>,
+    Standard: Distribution<E::G2Projective>,
+{
+    type Fr = E::Fr;
+    type G1Projective = G1Projective<E>;
+    type G1Affine = G1Affine<E>;
+    type G1Prepared = G1Prepared<E>;
+    type G2Projective = G2Projective<E>;
+    type G2Affine = G2Affine<E>;
+    type G2Prepared = G2Prepared<E>;
+    type Fq = E::Fq;
+    type Fqe = E::Fqe;
+    type Fqk = E::Fqk;
+
+    fn miller_loop<'a, I>(i: I) -> Self::Fqk
+    where
+        I: IntoIterator<Item = &'a (Self::G1Prepared, Self::G2Prepared)>,
+    {
+        // NOTE: current impl is extremely slow as it requires double iter
+        let pairs = i
+            .into_iter()
+            .map(|i| (i.0 .0.clone(), i.1 .0.clone()))
+            .collect::<Vec<_>>();
+        return E::miller_loop(pairs.iter().collect::<Vec<_>>());
+    }
+
+    fn final_exponentiation(f: &Self::Fqk) -> Option<Self::Fqk> {
+        return E::final_exponentiation(f);
     }
 }

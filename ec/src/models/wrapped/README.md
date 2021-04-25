@@ -117,3 +117,29 @@ Manual Impl
 ### Macro
 
 - [x] `ark_ff::impl_additive_ops_from_ref`
+
+## PairingCurves
+
+### `Engine`
+
+- [x] `PairingEngine`
+
+### `G1Prepared`
+
+- [ ] `is_zero()`
+
+#### Traits
+
+- [x] `From<G1Affine<P>> `
+- [x] `Default`
+- [x] `ToBytes`
+
+### `G2Prepared`
+
+- [ ] `is_zero()`
+
+#### Traits
+
+- [x] `From<G1Affine<P>> `
+- [x] `Default`
+- [x] `ToBytes`
