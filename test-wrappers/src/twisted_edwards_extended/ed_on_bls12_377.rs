@@ -1,6 +1,6 @@
 use ark_ed_on_bls12_377::{EdwardsAffine as EdAffine, EdwardsProjective as EdProjective};
 
-use ark_ec::models::wrapped::twisted_edwards_extended::{GroupAffine, GroupProjective};
+use ark_ec::models::wrapped::{GroupAffine, GroupProjective};
 use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::rand::Rng;
 use ark_std::test_rng;

@@ -1,5 +1,5 @@
 use ark_ec::{
-    models::wrapped::short_weierstrass_jacobian::{GroupAffine, GroupProjective},
+    models::wrapped::{GroupAffine, GroupProjective},
     AffineCurve,
 };
 use ark_pallas::{Affine, Projective};
