@@ -15,13 +15,14 @@ license = "MIT/Apache-2.0"
 # [dependencies]
 
 [dev-dependencies]
-ark-std = {version = "^0.2.0", default-features = false}
 ark-algebra-test-templates = {version = "^0.2.0", path = "../test-templates", default-features = false}
 ark-ec = {version = "^0.2.0", path = "../ec", default-features = false}
-ark-ff = {version = "^0.2.0", path = "../ff", default-features = false}
-ark-serialize = {version = "^0.2.0", path = "../serialize", default-features = false}
 ark-ed-on-bls12-377 = {version = "^0.2.0"}
+ark-ff = {version = "^0.2.0", path = "../ff", default-features = false}
+ark-mnt4-298 = {version = "^0.2.0"}
 ark-pallas = {version = "^0.2.0"}
+ark-serialize = {version = "^0.2.0", path = "../serialize", default-features = false}
+ark-std = {version = "^0.2.0", default-features = false}
 
 # [features]
 # default = []
