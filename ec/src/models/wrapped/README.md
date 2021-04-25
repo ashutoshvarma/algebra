@@ -1,10 +1,7 @@
 Current Status for Wrapped Models
 
 ```rust
-pub use crate::wrapped::twisted_edwards_extended::{GroupAffine, GroupProjective};
-```
-```rust
-pub use crate::wrapped::short_weierstrass_jacobian::{GroupAffine, GroupProjective};
+pub use crate::wrapped::{GroupAffine, GroupProjective};
 ```
 
 ## GroupAffine
@@ -64,11 +61,11 @@ Need Separate wrap for both models
 
 ### Macro
 
-- [ ] `ark_ff::impl_additive_ops_from_ref` **(Only ED)**
+- [x] `ark_ff::impl_additive_ops_from_ref` **(Only ED)**
 
 ### `mod group_impl` **(Only ED)**
 
-- [ ] `Group` Trait
+- [x] `Group` Trait
 
 ## GroupProjective
 
