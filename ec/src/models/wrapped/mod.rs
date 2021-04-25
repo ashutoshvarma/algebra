@@ -557,22 +557,6 @@ impl<E: PairingEngine> ToBytes for G2Prepared<E> {
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
 pub struct CurveWrapper<E: PairingEngine>(pub E);
 
-impl<E: PairingEngine> Wrapped for CurveWrapper<E> {
-    type WrapTarget = E;
-    fn wrapped(&self) -> &Self::WrapTarget {
-        &(self.0)
-    }
-    fn mut_wrapped(&mut self) -> &mut Self::WrapTarget {
-        &mut (self.0)
-    }
-    fn set_wrapped(&mut self, wrapped: Self::WrapTarget) {
-        self.0 = wrapped
-    }
-    fn new_wrap(inner: Self::WrapTarget) -> Self {
-        Self(inner)
-    }
-}
-
 impl<E: PairingEngine> PairingEngine for CurveWrapper<E>
 where
     Standard: Distribution<E::G1Projective>,
