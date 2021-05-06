@@ -555,9 +555,9 @@ impl<E: PairingEngine> ToBytes for G2Prepared<E> {
 // Pairing Curve
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
-pub struct CurveWrapper<E: PairingEngine>(pub E);
+pub struct EngineWrapper<E: PairingEngine>(pub E);
 
-impl<E: PairingEngine> PairingEngine for CurveWrapper<E>
+impl<E: PairingEngine> PairingEngine for EngineWrapper<E>
 where
     Standard: Distribution<E::G1Projective>,
     Standard: Distribution<E::G2Projective>,

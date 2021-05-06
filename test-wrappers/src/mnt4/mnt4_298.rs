@@ -10,7 +10,7 @@ type G1Projective = wrapped::G1Projective<MNT4_298>;
 type G2Projective = wrapped::G2Projective<MNT4_298>;
 type G1Affine = wrapped::G1Affine<MNT4_298>;
 type G2Affine = wrapped::G2Affine<MNT4_298>;
-type WrappedMNT4_298 = wrapped::CurveWrapper<MNT4_298>;
+type WrappedMNT4_298 = wrapped::EngineWrapper<MNT4_298>;
 
 #[test]
 fn test_g1_projective_curve() {
