@@ -1,14 +1,19 @@
 use ark_ed_on_bls12_377::{EdwardsAffine as EdAffine, EdwardsProjective as EdProjective};
 
+use ark_algebra_test_templates::{curves::*, groups::*};
 use ark_ec::models::wrapped::{GroupAffine, GroupProjective};
+use ark_ec::wrapped;
 use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::rand::Rng;
 use ark_std::test_rng;
 
-use ark_algebra_test_templates::{curves::*, groups::*};
-
 type EdwardsProjective = GroupProjective<EdProjective>;
 type EdwardsAffine = GroupAffine<EdAffine>;
+
+#[test]
+fn test_projective_noncanonical_serialization() {
+    wrapped::serialize::tests::test_serialize_projective::<EdwardsProjective>();
+}
 
 #[test]
 fn test_projective_curve() {

@@ -1,3 +1,4 @@
+use ark_ec::wrapped;
 use ark_ec::{
     models::wrapped::{GroupAffine, GroupProjective},
     AffineCurve,
@@ -8,6 +9,11 @@ use ark_std::{rand::Rng, test_rng};
 use ark_algebra_test_templates::{curves::curve_tests, groups::group_test};
 type PallasAffine = GroupAffine<Affine>;
 type PallasProjective = GroupProjective<Projective>;
+
+#[test]
+fn test_projective_noncanonical_serialization() {
+    wrapped::serialize::tests::test_serialize_projective::<PallasProjective>();
+}
 
 #[test]
 fn test_projective_curve() {

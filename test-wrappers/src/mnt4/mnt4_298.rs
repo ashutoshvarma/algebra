@@ -13,6 +13,12 @@ type G2Affine = wrapped::G2Affine<MNT4_298>;
 type WrappedMNT4_298 = wrapped::EngineWrapper<MNT4_298>;
 
 #[test]
+fn test_projective_noncanonical_serialization() {
+    wrapped::serialize::tests::test_serialize_projective::<G1Projective>();
+    wrapped::serialize::tests::test_serialize_projective::<G2Projective>();
+}
+
+#[test]
 fn test_g1_projective_curve() {
     curve_tests::<G1Projective>();
 
