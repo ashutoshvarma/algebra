@@ -1,10 +1,10 @@
 use crate::models::short_weierstrass_jacobian::GroupProjective as GroupProjectiveSW;
 use crate::models::twisted_edwards_extended::GroupProjective as GroupProjectiveED;
 use crate::models::wrapped::Wrapped;
-use crate::{models::TEModelParameters, ProjectiveCurve, SWModelParameters};
+use crate::{models::TEModelParameters, AffineCurve, ProjectiveCurve, SWModelParameters};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
-use crate::wrapped::twisted_edwards_extended::GroupProjective;
+use crate::wrapped::GroupProjective;
 
 pub use ark_std::io::{Read, Write};
 
@@ -37,10 +37,10 @@ impl<P: TEModelParameters> NonCanonicalSerialize for GroupProjective<GroupProjec
     }
 
     fn noncanonical_serialized_size(&self) -> usize {
-        self.wrapped().x.serialized_size()
-            + self.wrapped().y.serialized_size()
-            + self.wrapped().t.serialized_size()
-            + self.wrapped().z.serialized_size()
+        self.wrapped().x.uncompressed_size()
+            + self.wrapped().y.uncompressed_size()
+            + self.wrapped().t.uncompressed_size()
+            + self.wrapped().z.uncompressed_size()
     }
 }
 
@@ -56,9 +56,9 @@ impl<P: SWModelParameters> NonCanonicalSerialize for GroupProjective<GroupProjec
     }
 
     fn noncanonical_serialized_size(&self) -> usize {
-        self.wrapped().x.serialized_size()
-            + self.wrapped().y.serialized_size()
-            + self.wrapped().z.serialized_size()
+        self.wrapped().x.uncompressed_size()
+            + self.wrapped().y.uncompressed_size()
+            + self.wrapped().z.uncompressed_size()
     }
 }
 
@@ -86,6 +86,72 @@ impl<P: SWModelParameters> NonCanonicalDeserialize for GroupProjective<GroupProj
 
         let p = GroupProjective(GroupProjectiveSW::<P>::new(x, y, z));
         Ok(p)
+    }
+}
+
+//
+// GroupAffine
+//
+
+// impl<P: TEModelParameters> NonCanonicalSerialize for GroupAffine<GroupAffineED<P>> {
+//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+//         &self,
+//         mut writer: W,
+//     ) -> Result<(), SerializationError> {
+//         self.wrapped().serialize_uncompressed(writer)
+//     }
+
+//     fn noncanonical_serialized_size(&self) -> usize {
+//         self.wrapped().uncompressed_size()
+//     }
+// }
+// impl<P: SWModelParameters> NonCanonicalSerialize for GroupAffine<GroupAffineSW<P>> {
+//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+//         &self,
+//         mut writer: W,
+//     ) -> Result<(), SerializationError> {
+//         self.wrapped().serialize_uncompressed(writer)
+//     }
+
+//     fn noncanonical_serialized_size(&self) -> usize {
+//         self.wrapped().uncompressed_size()
+//     }
+// }
+
+// impl<P: TEModelParameters> NonCanonicalDeserialize for GroupAffine<GroupAffineED<P>> {
+//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+//         mut reader: R,
+//     ) -> Result<Self, SerializationError> {
+//         <Self as Wrapped>::WrapTarget::deserialize_uncompressed(reader).map(|v| Self(v))
+//     }
+// }
+
+// impl<P: SWModelParameters> NonCanonicalDeserialize for GroupAffine<GroupAffineSW<P>> {
+//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+//         mut reader: R,
+//     ) -> Result<Self, SerializationError> {
+//         <Self as Wrapped>::WrapTarget::deserialize_uncompressed(reader).map(|v| Self(v))
+//     }
+// }
+
+impl<C: AffineCurve> NonCanonicalDeserialize for C {
+    fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+        reader: R,
+    ) -> Result<Self, SerializationError> {
+        C::deserialize_uncompressed(reader)
+    }
+}
+
+impl<C: AffineCurve> NonCanonicalSerialize for C {
+    fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+        &self,
+        writer: W,
+    ) -> Result<(), SerializationError> {
+        self.serialize_uncompressed(writer)
+    }
+
+    fn noncanonical_serialized_size(&self) -> usize {
+        self.uncompressed_size()
     }
 }
 
