@@ -69,10 +69,10 @@ impl<P: TEModelParameters> NonCanonicalDeserialize for GroupProjective<GroupProj
     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
         mut reader: R,
     ) -> Result<Self, SerializationError> {
-        let x: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
-        let y: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
-        let t: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
-        let z: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
+        let x: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let y: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let t: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let z: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
 
         let p = GroupProjective(GroupProjectiveED::<P>::new(x, y, t, z));
         Ok(p)
@@ -83,9 +83,9 @@ impl<P: SWModelParameters> NonCanonicalDeserialize for GroupProjective<GroupProj
     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
         mut reader: R,
     ) -> Result<Self, SerializationError> {
-        let x: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
-        let y: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
-        let z: P::BaseField = CanonicalDeserialize::deserialize(&mut reader)?;
+        let x: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let y: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let z: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
 
         let p = GroupProjective(GroupProjectiveSW::<P>::new(x, y, z));
         Ok(p)
@@ -96,67 +96,26 @@ impl<P: SWModelParameters> NonCanonicalDeserialize for GroupProjective<GroupProj
 // GroupAffine
 //
 
-// impl<P: TEModelParameters> NonCanonicalSerialize for GroupAffine<GroupAffineED<P>> {
-//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
-//         &self,
-//         mut writer: W,
-//     ) -> Result<(), SerializationError> {
-//         self.wrapped().serialize_uncompressed(writer)
-//     }
+impl<C: AffineCurve> NonCanonicalDeserialize for C {
+    fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+        reader: R,
+    ) -> Result<Self, SerializationError> {
+        C::deserialize_uncompressed(reader)
+    }
+}
 
-//     fn noncanonical_serialized_size(&self) -> usize {
-//         self.wrapped().uncompressed_size()
-//     }
-// }
-// impl<P: SWModelParameters> NonCanonicalSerialize for GroupAffine<GroupAffineSW<P>> {
-//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
-//         &self,
-//         mut writer: W,
-//     ) -> Result<(), SerializationError> {
-//         self.wrapped().serialize_uncompressed(writer)
-//     }
+impl<C: AffineCurve> NonCanonicalSerialize for C {
+    fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+        &self,
+        writer: W,
+    ) -> Result<(), SerializationError> {
+        self.serialize_uncompressed(writer)
+    }
 
-//     fn noncanonical_serialized_size(&self) -> usize {
-//         self.wrapped().uncompressed_size()
-//     }
-// }
-
-// impl<P: TEModelParameters> NonCanonicalDeserialize for GroupAffine<GroupAffineED<P>> {
-//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
-//         mut reader: R,
-//     ) -> Result<Self, SerializationError> {
-//         <Self as Wrapped>::WrapTarget::deserialize_uncompressed(reader).map(|v| Self(v))
-//     }
-// }
-
-// impl<P: SWModelParameters> NonCanonicalDeserialize for GroupAffine<GroupAffineSW<P>> {
-//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
-//         mut reader: R,
-//     ) -> Result<Self, SerializationError> {
-//         <Self as Wrapped>::WrapTarget::deserialize_uncompressed(reader).map(|v| Self(v))
-//     }
-// }
-
-// impl<C: AffineCurve> NonCanonicalDeserialize for C {
-//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
-//         reader: R,
-//     ) -> Result<Self, SerializationError> {
-//         C::deserialize_uncompressed(reader)
-//     }
-// }
-
-// impl<C: AffineCurve> NonCanonicalSerialize for C {
-//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
-//         &self,
-//         writer: W,
-//     ) -> Result<(), SerializationError> {
-//         self.serialize_uncompressed(writer)
-//     }
-
-//     fn noncanonical_serialized_size(&self) -> usize {
-//         self.uncompressed_size()
-//     }
-// }
+    fn noncanonical_serialized_size(&self) -> usize {
+        self.uncompressed_size()
+    }
+}
 
 #[cfg(test)]
 pub mod tests {
@@ -164,7 +123,6 @@ pub mod tests {
     use ark_std::{io::Cursor, test_rng};
 
     pub const ITERATIONS: usize = 10;
-   
     pub fn test_serialize_projective<
         G: ProjectiveCurve + NonCanonicalDeserialize + NonCanonicalSerialize,
     >() {
