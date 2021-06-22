@@ -334,7 +334,7 @@ where
         self
     }
 
-    fn add_assign_mixed(&mut self, other: &GroupAffine<C::Affine>) {
+    fn add_assign_mixed(&mut self, other: &Self::Affine) {
         C::add_assign_mixed(self.mut_wrapped(), other.wrapped())
     }
 }
