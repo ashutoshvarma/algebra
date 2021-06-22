@@ -61,10 +61,11 @@ impl VariableBaseMSM {
                         Some(vec![&bases_buff, &scalars_buff]),
                         vec![cp as u8],
                     )
+                    .unwrap()
                     .unwrap();
 
                 // deserialise and return
-                let raw = Cursor::new(result.unwrap()[0]);
+                let raw = Cursor::new(&result[0]);
                 G::Projective::noncanonical_deserialize_uncompressed_unchecked(raw).unwrap()
             }
             // TODO: Handle None better
@@ -72,38 +73,3 @@ impl VariableBaseMSM {
         }
     }
 }
-
-// let nb = nb_ref.unwrap();
-//                     let cp = CurveParameters::try_from_wrapped::<G>().unwrap();
-
-//                     let size = ark_std::cmp::min(bases.len(), scalars.len());
-//                     let scalars = &scalars[..size];
-//                     let bases = &bases[..size];
-//                     let scalars_and_bases_iter = scalars.iter().zip(bases);
-
-//                     // create temp buffers
-//                     let buff1: Vec<u8> =
-//                         vec![0; bases.len() * bases[0].noncanonical_serialized_size()];
-//                     let buff2: Vec<u8> = vec![0; bases.len() * scalars[0].uncompressed_size()];
-
-//                     // fill buffers with serialised args
-//                     let mut bases_buff = Cursor::new(buff1);
-//                     let mut scalars_buff = Cursor::new(buff2);
-//                     for (s, b) in scalars_and_bases_iter {
-//                         b.noncanonical_serialize_uncompressed_unchecked(&mut bases_buff)
-//                             .unwrap();
-//                         s.serialize_uncompressed(&mut scalars_buff).unwrap();
-//                     }
-
-//                     // call boundary
-//                     let result = nb_ref.unwrap()
-//                         .call(
-//                             CallId::VBMul,
-//                             Some(vec![&bases_buff.into_inner(), &scalars_buff.into_inner()]),
-//                             [cp][..],
-//                         )
-//                         .unwrap();
-
-//                     // deserialise and return
-//                     let raw = Cursor::new(result.unwrap()[0]);
-//                     G::Projective::noncanonical_deserialize_uncompressed_unchecked(raw).unwrap()
