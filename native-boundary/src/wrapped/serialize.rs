@@ -1,12 +1,15 @@
-use crate::models::short_weierstrass_jacobian::GroupProjective as GroupProjectiveSW;
-use crate::models::twisted_edwards_extended::GroupProjective as GroupProjectiveED;
-use crate::models::wrapped::Wrapped;
-use crate::{models::TEModelParameters, AffineCurve, ProjectiveCurve, SWModelParameters};
+use crate::wrapped::Wrapped;
+use ark_ec::models::short_weierstrass_jacobian::GroupProjective as GroupProjectiveSW;
+use ark_ec::models::twisted_edwards_extended::GroupProjective as GroupProjectiveED;
+use ark_ec::{models::TEModelParameters, AffineCurve, ProjectiveCurve, SWModelParameters};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
 use crate::wrapped::GroupProjective;
 
-pub use ark_std::io::{Read, Write};
+pub use ark_std::{
+    boxed::Box,
+    io::{Read, Write},
+};
 
 pub trait NonCanonicalSerialize {
     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
@@ -134,32 +137,34 @@ impl<P: SWModelParameters> NonCanonicalDeserialize for GroupProjective<GroupProj
 //     }
 // }
 
-impl<C: AffineCurve> NonCanonicalDeserialize for C {
-    fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
-        reader: R,
-    ) -> Result<Self, SerializationError> {
-        C::deserialize_uncompressed(reader)
-    }
-}
+// impl<C: AffineCurve> NonCanonicalDeserialize for C {
+//     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+//         reader: R,
+//     ) -> Result<Self, SerializationError> {
+//         C::deserialize_uncompressed(reader)
+//     }
+// }
 
-impl<C: AffineCurve> NonCanonicalSerialize for C {
-    fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
-        &self,
-        writer: W,
-    ) -> Result<(), SerializationError> {
-        self.serialize_uncompressed(writer)
-    }
+// impl<C: AffineCurve> NonCanonicalSerialize for C {
+//     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+//         &self,
+//         writer: W,
+//     ) -> Result<(), SerializationError> {
+//         self.serialize_uncompressed(writer)
+//     }
 
-    fn noncanonical_serialized_size(&self) -> usize {
-        self.uncompressed_size()
-    }
-}
+//     fn noncanonical_serialized_size(&self) -> usize {
+//         self.uncompressed_size()
+//     }
+// }
 
+#[cfg(test)]
 pub mod tests {
     use super::*;
     use ark_std::{io::Cursor, test_rng};
 
     pub const ITERATIONS: usize = 10;
+   
     pub fn test_serialize_projective<
         G: ProjectiveCurve + NonCanonicalDeserialize + NonCanonicalSerialize,
     >() {

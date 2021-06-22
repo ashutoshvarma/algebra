@@ -1,11 +1,18 @@
-use crate::models::short_weierstrass_jacobian::{
+use ark_ec::models::short_weierstrass_jacobian::{
     GroupAffine as GroupAffineSW, GroupProjective as GroupProjectiveSW,
 };
-use crate::models::SWModelParameters;
+use ark_ec::models::SWModelParameters;
 
-use crate::wrapped::Wrapped;
-pub use crate::wrapped::{GroupAffine, GroupProjective};
+use crate::wrapped::{Wrapped, WrappedCurve};
+pub use crate::{GroupAffine, GroupProjective};
 use ark_std::ops::AddAssign;
+
+impl<P: SWModelParameters> WrappedCurve for GroupAffine<GroupAffineSW<P>> {
+    type InnerCurveParameter = P;
+}
+impl<P: SWModelParameters> WrappedCurve for GroupProjective<GroupProjectiveSW<P>> {
+    type InnerCurveParameter = P;
+}
 
 // wrap inherent methods for short weierstrass group affine
 impl<P: SWModelParameters> GroupAffine<GroupAffineSW<P>> {
@@ -14,13 +21,13 @@ impl<P: SWModelParameters> GroupAffine<GroupAffineSW<P>> {
         GroupProjective(GroupAffineSW::<P>::scale_by_cofactor(self.wrapped()))
     }
 
-    #[allow(dead_code)]
-    pub(crate) fn mul_bits(
-        &self,
-        bits: impl Iterator<Item = bool>,
-    ) -> GroupProjective<GroupProjectiveSW<P>> {
-        GroupProjective(GroupAffineSW::<P>::mul_bits(self.wrapped(), bits))
-    }
+    // #[allow(dead_code)]
+    // pub(crate) fn mul_bits(
+    //     &self,
+    //     bits: impl Iterator<Item = bool>,
+    // ) -> GroupProjective<GroupProjectiveSW<P>> {
+    //     GroupProjective(GroupAffineSW::<P>::mul_bits(self.wrapped(), bits))
+    // }
 
     #[allow(dead_code)]
     fn get_point_from_x(x: P::BaseField, greatest: bool) -> Option<Self> {

@@ -1,4 +1,7 @@
-use crate::{AffineCurve, PairingEngine, ProjectiveCurve};
+use ark_ec::{
+    AffineCurve, ModelParameters, PairingEngine, ProjectiveCurve, SWModelParameters,
+    TEModelParameters,
+};
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
@@ -24,12 +27,17 @@ use ark_std::rand::{
 
 use derive_more::Display;
 
+// pub mod serialize;
 pub mod serialize;
 pub mod short_weierstrass_jacobian;
 pub mod twisted_edwards_extended;
 
+pub trait WrappedCurve: Wrapped {
+    type InnerCurveParameter: ModelParameters;
+}
+
 // Helper Trait for wrapping types
-pub trait Wrapped: Sized {
+pub trait Wrapped {
     type WrapTarget;
     fn wrapped(&self) -> &Self::WrapTarget;
     fn mut_wrapped(&mut self) -> &mut Self::WrapTarget;

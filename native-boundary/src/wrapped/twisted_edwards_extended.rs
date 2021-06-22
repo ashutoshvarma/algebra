@@ -1,11 +1,11 @@
-use crate::models::twisted_edwards_extended::{
+use ark_ec::models::twisted_edwards_extended::{
     GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
 };
-use crate::models::TEModelParameters;
+use ark_ec::models::TEModelParameters;
 // use crate::{AffineCurve, ProjectiveCurve};
 
-use crate::wrapped::Wrapped;
-pub use crate::wrapped::{GroupAffine, GroupProjective};
+use crate::wrapped::{Wrapped, WrappedCurve};
+pub use crate::{GroupAffine, GroupProjective};
 // use ark_ff::PrimeField;
 use ark_std::ops::{Add, AddAssign, MulAssign, Sub, SubAssign};
 
@@ -16,7 +16,12 @@ use ark_std::rand::{
 
 use ark_ff::Zero;
 
-// type _GroupAffine<P> = GroupAffine<GroupAffineED<P>>;
+impl<P: TEModelParameters> WrappedCurve for GroupAffine<GroupAffineED<P>> {
+    type InnerCurveParameter = P;
+}
+impl<P: TEModelParameters> WrappedCurve for GroupProjective<GroupProjectiveED<P>> {
+    type InnerCurveParameter = P;
+}
 
 // wrap inherent methods for short weierstrass group affine
 impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
@@ -25,13 +30,13 @@ impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
         GroupProjective(GroupAffineED::<P>::scale_by_cofactor(self.wrapped()))
     }
 
-    #[allow(dead_code)]
-    pub(crate) fn mul_bits(
-        &self,
-        bits: impl Iterator<Item = bool>,
-    ) -> GroupProjective<GroupProjectiveED<P>> {
-        GroupProjective(GroupAffineED::<P>::mul_bits(self.wrapped(), bits))
-    }
+    // #[allow(dead_code)]
+    // pub(crate) fn mul_bits(
+    //     &self,
+    //     bits: impl Iterator<Item = bool>,
+    // ) -> GroupProjective<GroupProjectiveED<P>> {
+    //     GroupProjective(GroupAffineED::<P>::mul_bits(self.wrapped(), bits))
+    // }
 
     #[allow(dead_code)]
     fn get_point_from_x(x: P::BaseField, greatest: bool) -> Option<Self> {
@@ -191,7 +196,7 @@ impl<'a, P: TEModelParameters> core::ops::SubAssign<&'a mut Self>
 
 mod group_impl {
     use super::*;
-    use crate::group::Group;
+    use ark_ec::group::Group;
 
     impl<P: TEModelParameters> Group for GroupAffine<GroupAffineED<P>> {
         type ScalarField = P::ScalarField;

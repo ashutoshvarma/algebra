@@ -1,8 +1,6 @@
-use ark_ec::wrapped;
-use ark_ec::{
-    models::wrapped::{GroupAffine, GroupProjective},
-    AffineCurve,
-};
+use ark_ec::AffineCurve;
+use ark_native_boundary::wrapped;
+use ark_native_boundary::wrapped::{GroupAffine, GroupProjective};
 use ark_pallas::{Affine, Projective};
 use ark_std::{rand::Rng, test_rng};
 
