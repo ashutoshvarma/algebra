@@ -79,10 +79,9 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::wrapped::GroupAffine;
+    use crate::wrapped::{G1Affine, G2Affine, GroupAffine};
     use ark_ec::msm;
     use ark_ec::ProjectiveCurve;
-    use ark_pallas::Affine;
 
     pub fn test_var_base_msm<G: AffineCurve + WrappedCurve + CrossBoundary>()
     where
@@ -105,6 +104,11 @@ mod tests {
 
     #[test]
     fn test_msm_vb() {
-        test_var_base_msm::<GroupAffine<Affine>>();
+        // non-pairing curves
+        test_var_base_msm::<GroupAffine<ark_pallas::Affine>>();
+        test_var_base_msm::<GroupAffine<ark_ed_on_bls12_377::EdwardsAffine>>();
+        // pairing curves
+        test_var_base_msm::<G1Affine<ark_mnt4_298::MNT4_298>>();
+        test_var_base_msm::<G2Affine<ark_mnt4_298::MNT4_298>>();
     }
 }
