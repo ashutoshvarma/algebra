@@ -11,6 +11,8 @@ use std::convert::TryInto;
 
 use crate::boundary::{CallId, NativeBoundary};
 
+// Dummy boundary interface for testing (de)serialization, delegation calls and
+// dynamic dispatch of curve types
 #[derive(Clone)]
 pub struct DummyBoundary;
 
@@ -21,9 +23,11 @@ impl NativeBoundary for DummyBoundary {
         args: Option<Vec<&[u8]>>,
         cp: Vec<u8>,
     ) -> Result<Option<Vec<Vec<u8>>>, &'static str> {
+        // match call id
         match id {
             CallId::VBMul => {
                 let vb_args = args.unwrap();
+                // match curve type
                 match cp[0].try_into().unwrap() {
                     CurveParameters::Pallas => {
                         Ok(Some(vec![DummyBoundary::pass_vb_multi_scalar_mul::<

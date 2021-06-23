@@ -10,7 +10,7 @@ use ark_ff::prelude::*;
 use ark_serialize::CanonicalSerialize;
 use ark_std::{io::Cursor, vec::Vec};
 
-use ark_ec::AffineCurve;
+use ark_ec::{msm, AffineCurve};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -18,10 +18,6 @@ use rayon::prelude::*;
 pub struct VariableBaseMSM;
 
 impl VariableBaseMSM {
-    // pub fn multi_scalar_mul<G: AffineCurve>(
-    //     bases: &[G],
-    //     scalars: &[<G::ScalarField as PrimeField>::BigInt],
-    // ) -> G::Projective {
     pub fn multi_scalar_mul<G: AffineCurve + WrappedCurve + CrossBoundary>(
         bases: &[G],
         scalars: &[<G::ScalarField as PrimeField>::BigInt],
@@ -68,8 +64,14 @@ impl VariableBaseMSM {
                 let raw = Cursor::new(&result[0]);
                 G::Projective::noncanonical_deserialize_uncompressed_unchecked(raw).unwrap()
             }
-            // TODO: Handle None better
-            None => panic!(),
+            // If no native boundary is set for `G`, check for fallback
+            None => {
+                if G::NATIVE_FALLBACK.get() {
+                    msm::VariableBaseMSM::multi_scalar_mul(bases, scalars)
+                } else {
+                    panic!("No native boundary set for given type!")
+                }
+            }
         }
     }
 }
@@ -77,7 +79,7 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{boundary::dummy::DummyBoundary, wrapped::GroupAffine};
+    use crate::wrapped::GroupAffine;
     use ark_ec::msm;
     use ark_ec::ProjectiveCurve;
     use ark_pallas::Affine;
@@ -103,7 +105,6 @@ mod tests {
 
     #[test]
     fn test_msm_vb() {
-        GroupAffine::<Affine>::set_native_boundary(Some(&DummyBoundary));
         test_var_base_msm::<GroupAffine<Affine>>();
     }
 }
