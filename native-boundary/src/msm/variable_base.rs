@@ -73,3 +73,37 @@ impl VariableBaseMSM {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{boundary::DummyBoundary, wrapped::GroupAffine};
+    use ark_ec::msm;
+    use ark_ec::ProjectiveCurve;
+    use ark_pallas::Affine;
+
+    pub fn test_var_base_msm<G: AffineCurve + WrappedCurve + CrossBoundary>()
+    where
+        G: NonCanonicalDeserialize + NonCanonicalSerialize,
+        G::Projective: NonCanonicalDeserialize,
+    {
+        const SAMPLES: usize = 1 << 10;
+        let mut rng = ark_std::test_rng();
+        let v = (0..SAMPLES - 1)
+            .map(|_| G::ScalarField::rand(&mut rng).into_repr())
+            .collect::<Vec<_>>();
+        let g = (0..SAMPLES)
+            .map(|_| G::Projective::rand(&mut rng))
+            .collect::<Vec<_>>();
+        let g = <G::Projective as ProjectiveCurve>::batch_normalization_into_affine(&g);
+        let wasm_call = msm::VariableBaseMSM::multi_scalar_mul(g.as_slice(), v.as_slice());
+        let native_call = VariableBaseMSM::multi_scalar_mul(g.as_slice(), v.as_slice());
+        assert_eq!(native_call.into_affine(), wasm_call.into_affine());
+    }
+
+    #[test]
+    fn test_msm_vb() {
+        GroupAffine::<Affine>::set_native_boundary(Some(&DummyBoundary));
+        test_var_base_msm::<GroupAffine<Affine>>();
+    }
+}
