@@ -1,51 +1,15 @@
 use crate::{
     wrapped::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
-    {curves::CurveParameters, GroupAffine, GroupProjective},
+    {curves::CurveParameters, GroupAffine},
 };
-use ark_ec::{msm::VariableBaseMSM, AffineCurve, ProjectiveCurve};
+use ark_ec::{msm::VariableBaseMSM, AffineCurve};
 use ark_ff::PrimeField;
 use ark_ff::Zero;
 use ark_serialize::CanonicalDeserialize;
 use ark_std::{io::Cursor, vec::Vec};
-use std::cell::Cell;
 use std::convert::TryInto;
 
-pub trait CrossBoundary {
-    // native boundary instance for passing call to native host
-    const NATIVE_BOUNDARY: Cell<Option<&'static dyn NativeBoundary>> =
-        Cell::new(Some(&DummyBoundary));
-
-    // No idea why, but `set` on Cell is not changing the value
-    fn set_native_boundary(nb: Option<&'static dyn NativeBoundary>) {
-        Self::NATIVE_BOUNDARY.set(nb);
-    }
-
-    fn get_boundary() -> Option<&'static dyn NativeBoundary> {
-        // Self::NATIVE_BOUNDARY::get()
-        Self::NATIVE_BOUNDARY.get()
-    }
-}
-
-impl<C: AffineCurve> CrossBoundary for GroupAffine<C> {}
-impl<C: ProjectiveCurve> CrossBoundary for GroupProjective<C> {}
-
-pub enum CallId {
-    // variable_base::multi_scalar_mul
-    VBMul,
-    // fixed_base::multi_scalar_mul
-    FBMul,
-}
-
-pub trait NativeBoundary {
-    fn call(
-        &self,
-        id: CallId,
-        args: Option<Vec<&[u8]>>,
-        cp: Vec<u8>,
-    ) -> Result<Option<Vec<Vec<u8>>>, &'static str>;
-}
-
-pub enum Boundary {}
+use crate::boundary::{CallId, NativeBoundary};
 
 #[derive(Clone)]
 pub struct DummyBoundary;
