@@ -31,6 +31,7 @@ use zeroize::Zeroize;
 
 pub mod models;
 pub use self::models::*;
+use models::wrapped::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
 
 pub mod group;
 
@@ -123,6 +124,8 @@ pub trait ProjectiveCurve:
     + FromBytes
     + CanonicalSerialize
     + CanonicalDeserialize
+    + NonCanonicalSerialize
+    + NonCanonicalDeserialize
     + Copy
     + Clone
     + Default
@@ -147,6 +150,7 @@ pub trait ProjectiveCurve:
     + core::iter::Sum<Self>
     + for<'a> core::iter::Sum<&'a Self>
     + From<<Self as ProjectiveCurve>::Affine>
+    + CurveParameters
 {
     const COFACTOR: &'static [u64];
     type ScalarField: PrimeField + SquareRootField;
@@ -228,6 +232,8 @@ pub trait AffineCurve:
     + FromBytes
     + CanonicalSerialize
     + CanonicalDeserialize
+    + NonCanonicalSerialize
+    + NonCanonicalDeserialize
     + Copy
     + Clone
     + Default
@@ -240,6 +246,7 @@ pub trait AffineCurve:
     + Neg<Output = Self>
     + Zeroize
     + From<<Self as AffineCurve>::Projective>
+    + CurveParameters
 {
     const COFACTOR: &'static [u64];
     type ScalarField: PrimeField + SquareRootField + Into<<Self::ScalarField as PrimeField>::BigInt>;
@@ -354,4 +361,8 @@ pub trait PairingFriendlyCycle: CurveCycle {
         Fq = <Self::E2 as AffineCurve>::BaseField,
         Fr = <Self::E2 as AffineCurve>::ScalarField,
     >;
+}
+
+pub trait CurveParameters {
+    type Parameters: ModelParameters;
 }
