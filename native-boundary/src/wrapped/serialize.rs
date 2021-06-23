@@ -1,7 +1,7 @@
 use crate::wrapped::Wrapped;
 use ark_ec::models::short_weierstrass_jacobian::GroupProjective as GroupProjectiveSW;
 use ark_ec::models::twisted_edwards_extended::GroupProjective as GroupProjectiveED;
-use ark_ec::{models::TEModelParameters, AffineCurve, ProjectiveCurve, SWModelParameters};
+use ark_ec::{models::TEModelParameters, AffineCurve, SWModelParameters};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
 use crate::wrapped::GroupProjective;
@@ -120,6 +120,7 @@ impl<C: AffineCurve> NonCanonicalSerialize for C {
 #[cfg(test)]
 pub mod tests {
     use super::*;
+    use ark_ec::ProjectiveCurve;
     use ark_std::{io::Cursor, test_rng};
 
     pub const ITERATIONS: usize = 10;

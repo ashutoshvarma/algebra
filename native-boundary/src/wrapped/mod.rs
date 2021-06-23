@@ -1,7 +1,4 @@
-use ark_ec::{
-    AffineCurve, ModelParameters, PairingEngine, ProjectiveCurve, SWModelParameters,
-    TEModelParameters,
-};
+use ark_ec::{AffineCurve, ModelParameters, PairingEngine, ProjectiveCurve};
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 
