@@ -12,10 +12,12 @@ use std::convert::TryInto;
 
 pub trait CrossBoundary {
     // native boundary instance for passing call to native host
-    const NATIVE_BOUNDARY: Cell<Option<&'static dyn NativeBoundary>> = Cell::new(None);
+    const NATIVE_BOUNDARY: Cell<Option<&'static dyn NativeBoundary>> =
+        Cell::new(Some(&DummyBoundary));
 
-    fn set_native_boundary(nb: &'static dyn NativeBoundary) {
-        Self::NATIVE_BOUNDARY.set(Some(nb));
+    // No idea why, but `set` on Cell is not changing the value
+    fn set_native_boundary(nb: Option<&'static dyn NativeBoundary>) {
+        Self::NATIVE_BOUNDARY.set(nb);
     }
 
     fn get_boundary() -> Option<&'static dyn NativeBoundary> {
