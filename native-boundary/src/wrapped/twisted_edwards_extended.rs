@@ -1,10 +1,9 @@
-use crate::models::twisted_edwards_extended::{
+use ark_ec::models::twisted_edwards_extended::{
     GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
 };
-use crate::models::TEModelParameters;
+use ark_ec::models::TEModelParameters;
 
-use crate::wrapped::Wrapped;
-pub use crate::wrapped::{GroupAffine, GroupProjective};
+pub use crate::wrapped::{GroupAffine, GroupProjective, Wrapped};
 // use ark_ff::PrimeField;
 use ark_std::ops::{Add, AddAssign, MulAssign, Sub, SubAssign};
 
@@ -188,7 +187,7 @@ impl<'a, P: TEModelParameters> core::ops::SubAssign<&'a mut Self>
 
 mod group_impl {
     use super::*;
-    use crate::group::Group;
+    use ark_ec::group::Group;
 
     impl<P: TEModelParameters> Group for GroupAffine<GroupAffineED<P>> {
         type ScalarField = P::ScalarField;

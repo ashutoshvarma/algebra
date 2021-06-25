@@ -2,6 +2,9 @@ use crate::CurveParameters;
 use ark_std::vec::Vec;
 use crossbeam_utils::atomic::AtomicCell;
 
+
+pub mod serialize;
+
 impl<P: CurveParameters> CrossBoundary for P {}
 
 pub trait CrossBoundary {

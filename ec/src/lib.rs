@@ -31,7 +31,9 @@ use zeroize::Zeroize;
 
 pub mod models;
 pub use self::models::*;
-use models::wrapped::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
+
+pub mod boundary;
+use boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
 
 pub mod group;
 

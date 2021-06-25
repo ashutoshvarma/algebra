@@ -1,5 +1,5 @@
-use crate::{
-    wrapped::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
+use ark_ec::{
+    boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
     AffineCurve, CurveParameters, PairingEngine, ProjectiveCurve,
 };
 
@@ -27,8 +27,6 @@ use ark_std::rand::{
 
 use derive_more::Display;
 
-pub mod boundary;
-pub mod serialize;
 pub mod short_weierstrass_jacobian;
 pub mod twisted_edwards_extended;
 

@@ -6,11 +6,8 @@ use ark_serialize::CanonicalDeserialize;
 use ark_std::{io::Cursor, vec::Vec};
 use std::convert::TryInto;
 
-use ark_ec::models::wrapped::{
-    boundary::{CallId, NativeBoundary},
-    serialize::NonCanonicalSerialize,
-    GroupAffine,
-};
+use crate::wrapped::GroupAffine;
+use ark_ec::boundary::{serialize::NonCanonicalSerialize, CallId, NativeBoundary};
 
 // Dummy boundary interface for testing (de)serialization, delegation calls and
 // dynamic dispatch of curve types
