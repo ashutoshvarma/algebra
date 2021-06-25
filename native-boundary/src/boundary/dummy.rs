@@ -1,12 +1,12 @@
+use crate::boundary::{CallId, NativeBoundary};
 use crate::curves::BoundaryCurves;
+use crate::wrapped::GroupAffine;
+use ark_ec::boundary::serialize::NonCanonicalSerialize;
 use ark_ec::{msm::VariableBaseMSM, AffineCurve};
 use ark_ff::PrimeField;
 use ark_ff::Zero;
 use ark_serialize::CanonicalDeserialize;
 use ark_std::{convert::TryInto, io::Cursor, vec::Vec};
-
-use crate::wrapped::GroupAffine;
-use ark_ec::boundary::{serialize::NonCanonicalSerialize, CallId, NativeBoundary};
 
 // Dummy boundary interface for testing (de)serialization, delegation calls and
 // dynamic dispatch of curve types

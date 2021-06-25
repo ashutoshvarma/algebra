@@ -1,9 +1,9 @@
+use crate::wrapped::Wrapped;
+pub use crate::wrapped::{GroupAffine, GroupProjective};
 use ark_ec::models::short_weierstrass_jacobian::{
     GroupAffine as GroupAffineSW, GroupProjective as GroupProjectiveSW,
 };
 use ark_ec::models::SWModelParameters;
-
-pub use crate::wrapped::{GroupAffine, GroupProjective, Wrapped};
 use ark_std::ops::AddAssign;
 
 // wrap inherent methods for short weierstrass group affine

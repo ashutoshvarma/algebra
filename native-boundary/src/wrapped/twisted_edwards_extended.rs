@@ -1,18 +1,15 @@
+use crate::wrapped::Wrapped;
+pub use crate::wrapped::{GroupAffine, GroupProjective};
 use ark_ec::models::twisted_edwards_extended::{
     GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
 };
 use ark_ec::models::TEModelParameters;
-
-pub use crate::wrapped::{GroupAffine, GroupProjective, Wrapped};
-// use ark_ff::PrimeField;
+use ark_ff::Zero;
 use ark_std::ops::{Add, AddAssign, MulAssign, Sub, SubAssign};
-
 use ark_std::rand::{
     distributions::{Distribution, Standard},
     Rng,
 };
-
-use ark_ff::Zero;
 
 // wrap inherent methods for short weierstrass group affine
 impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {

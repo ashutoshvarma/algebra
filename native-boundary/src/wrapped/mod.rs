@@ -1,31 +1,26 @@
+// use crate::boundary::CrossBoundary;
 use ark_ec::{
     boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
     AffineCurve, CurveParameters, PairingEngine, ProjectiveCurve,
 };
-
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
-
 use ark_ff::{
     bytes::{FromBytes, ToBytes},
     fields::PrimeField,
 };
-
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
+use ark_std::rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 use ark_std::{
     fmt::{Display, Formatter, Result as FmtResult},
     io::{Read, Result as IoResult, Write},
     ops::{Add, AddAssign, MulAssign, Neg, Sub, SubAssign},
     vec::Vec,
 };
-
+use derive_more::Display;
 use num_traits::Zero;
 use zeroize::Zeroize;
-
-use ark_std::rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
-
-use derive_more::Display;
 
 pub mod short_weierstrass_jacobian;
 pub mod twisted_edwards_extended;
@@ -320,10 +315,20 @@ where
     fn batch_normalization(v: &mut [Self]) {
         // This is slow, should be changed to a tested "unsafe" impl after
         // bench and profiling
-        let mut p_s = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
-        C::batch_normalization(&mut p_s);
-
-        v.iter_mut().zip(p_s).for_each(|(wg, g)| wg.set_wrapped(g));
+        // match C::get_native_boundary() {
+        //     Some(nb) => {}
+        //     None => {
+        //         if C::get_native_fallback() {
+        let mut inner_curves = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
+        C::batch_normalization(&mut inner_curves);
+        v.iter_mut()
+            .zip(inner_curves)
+            .for_each(|(wg, g)| wg.set_wrapped(g));
+        //         } else {
+        //             panic!("No boundary available!")
+        //         }
+        //     }
+        // }
     }
 
     fn double_in_place(&mut self) -> &mut Self {

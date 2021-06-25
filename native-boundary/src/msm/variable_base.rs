@@ -1,5 +1,6 @@
+use crate::boundary::{CallId, CrossBoundary};
 use crate::curves::BoundaryCurves;
-use ark_ec::boundary::{serialize::NonCanonicalDeserialize, CallId, CrossBoundary};
+use ark_ec::boundary::serialize::NonCanonicalDeserialize;
 use ark_ff::prelude::*;
 use ark_serialize::CanonicalSerialize;
 use ark_std::{io::Cursor, vec::Vec};
@@ -67,9 +68,9 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::boundary::CrossBoundary;
     use crate::boundary::DummyBoundary;
     use crate::wrapped::{G1Affine, G2Affine, GroupAffine};
-    use ark_ec::boundary::CrossBoundary;
     use ark_ec::msm;
     use ark_ec::ProjectiveCurve;
 
