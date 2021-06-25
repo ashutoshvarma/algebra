@@ -27,6 +27,7 @@ use ark_std::rand::{
 
 use derive_more::Display;
 
+pub mod boundary;
 pub mod serialize;
 pub mod short_weierstrass_jacobian;
 pub mod twisted_edwards_extended;
@@ -151,6 +152,7 @@ impl<C: AffineCurve> AffineCurve for GroupAffine<C>
 where
     Standard: Distribution<C::Projective>,
 {
+    const WRAPPED: bool = true;
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
     type ScalarField = C::ScalarField;
@@ -298,6 +300,7 @@ where
     Standard: Distribution<C>,
     // Self: From<C::Affine>
 {
+    const WRAPPED: bool = true;
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
     type ScalarField = C::ScalarField;

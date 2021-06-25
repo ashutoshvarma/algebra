@@ -152,6 +152,7 @@ pub trait ProjectiveCurve:
     + From<<Self as ProjectiveCurve>::Affine>
     + CurveParameters
 {
+    const WRAPPED: bool = false;
     const COFACTOR: &'static [u64];
     type ScalarField: PrimeField + SquareRootField;
     type BaseField: Field;
@@ -248,6 +249,7 @@ pub trait AffineCurve:
     + From<<Self as AffineCurve>::Projective>
     + CurveParameters
 {
+    const WRAPPED: bool = false;
     const COFACTOR: &'static [u64];
     type ScalarField: PrimeField + SquareRootField + Into<<Self::ScalarField as PrimeField>::BigInt>;
     type BaseField: Field;
