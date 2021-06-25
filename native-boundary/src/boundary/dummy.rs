@@ -1,7 +1,4 @@
-use crate::{
-    wrapped::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
-    {curves::CurveParameters, GroupAffine},
-};
+use crate::curves::BoundaryCurves;
 use ark_ec::{msm::VariableBaseMSM, AffineCurve};
 use ark_ff::PrimeField;
 use ark_ff::Zero;
@@ -9,7 +6,11 @@ use ark_serialize::CanonicalDeserialize;
 use ark_std::{io::Cursor, vec::Vec};
 use std::convert::TryInto;
 
-use crate::boundary::{CallId, NativeBoundary};
+use ark_ec::models::wrapped::{
+    boundary::{CallId, NativeBoundary},
+    serialize::NonCanonicalSerialize,
+    GroupAffine,
+};
 
 // Dummy boundary interface for testing (de)serialization, delegation calls and
 // dynamic dispatch of curve types
@@ -22,6 +23,7 @@ impl NativeBoundary for DummyBoundary {
         id: CallId,
         args: Option<Vec<&[u8]>>,
         cp: Vec<u8>,
+        wrapped: bool,
     ) -> Result<Option<Vec<Vec<u8>>>, &'static str> {
         // match call id
         match id {
@@ -29,25 +31,65 @@ impl NativeBoundary for DummyBoundary {
                 let vb_args = args.unwrap();
                 // match curve type
                 match cp[0].try_into().unwrap() {
-                    CurveParameters::Pallas => {
-                        Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
-                            GroupAffine<ark_pallas::Affine>,
-                        >(vb_args[0], vb_args[1])]))
+                    BoundaryCurves::Pallas => {
+                        if wrapped {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                GroupAffine<ark_pallas::Affine>,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        } else {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                ark_pallas::Affine,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        }
                     }
-                    CurveParameters::MNT4_298G1 => {
-                        Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
-                            GroupAffine<ark_mnt4_298::g1::G1Affine>,
-                        >(vb_args[0], vb_args[1])]))
+                    BoundaryCurves::MNT4_298G1 => {
+                        if wrapped {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                GroupAffine<ark_mnt4_298::g1::G1Affine>,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        } else {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                ark_mnt4_298::g1::G1Affine,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        }
                     }
-                    CurveParameters::MNT4_298G2 => {
-                        Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
-                            GroupAffine<ark_mnt4_298::g2::G2Affine>,
-                        >(vb_args[0], vb_args[1])]))
+                    BoundaryCurves::MNT4_298G2 => {
+                        if wrapped {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                GroupAffine<ark_mnt4_298::g2::G2Affine>,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        } else {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                ark_mnt4_298::g2::G2Affine,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        }
                     }
-                    CurveParameters::EdBls12_377 => {
-                        Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
-                            GroupAffine<ark_ed_on_bls12_377::EdwardsAffine>,
-                        >(vb_args[0], vb_args[1])]))
+                    BoundaryCurves::EdBls12_377 => {
+                        if wrapped {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                GroupAffine<ark_ed_on_bls12_377::EdwardsAffine>,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        } else {
+                            Ok(Some(vec![DummyBoundary::handle_vb_multi_scalar_mul::<
+                                ark_ed_on_bls12_377::EdwardsAffine,
+                            >(
+                                vb_args[0], vb_args[1]
+                            )]))
+                        }
                     }
                 }
             }
@@ -57,15 +99,7 @@ impl NativeBoundary for DummyBoundary {
 }
 
 impl DummyBoundary {
-    fn handle_vb_multi_scalar_mul<
-        G: AffineCurve + NonCanonicalDeserialize + NonCanonicalSerialize,
-    >(
-        sbases: &[u8],
-        sscalars: &[u8],
-    ) -> Vec<u8>
-    where
-        G::Projective: NonCanonicalSerialize,
-    {
+    fn handle_vb_multi_scalar_mul<G: AffineCurve>(sbases: &[u8], sscalars: &[u8]) -> Vec<u8> {
         // TODO: remove this simple hack to get the serialised size
         let len = sbases.len() / G::noncanonical_serialized_size(&G::zero());
         let mut bases_buff = Cursor::new(sbases);
