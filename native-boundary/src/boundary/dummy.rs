@@ -3,8 +3,7 @@ use ark_ec::{msm::VariableBaseMSM, AffineCurve};
 use ark_ff::PrimeField;
 use ark_ff::Zero;
 use ark_serialize::CanonicalDeserialize;
-use ark_std::{io::Cursor, vec::Vec};
-use std::convert::TryInto;
+use ark_std::{convert::TryInto, io::Cursor, vec::Vec};
 
 use crate::wrapped::GroupAffine;
 use ark_ec::boundary::{serialize::NonCanonicalSerialize, CallId, NativeBoundary};

@@ -17,8 +17,8 @@ use ark_ff::{
 };
 
 use crate::{
-    models::SWModelParameters as Parameters,
     boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
+    models::SWModelParameters as Parameters,
     AffineCurve, CurveParameters, ProjectiveCurve,
 };
 

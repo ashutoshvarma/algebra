@@ -67,9 +67,9 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ark_ec::boundary::CrossBoundary;
     use crate::boundary::DummyBoundary;
     use crate::wrapped::{G1Affine, G2Affine, GroupAffine};
+    use ark_ec::boundary::CrossBoundary;
     use ark_ec::msm;
     use ark_ec::ProjectiveCurve;
 

@@ -2,7 +2,7 @@ use ark_ec::{models::mnt4::MNT4Parameters, CurveParameters};
 use ark_ed_on_bls12_377::EdwardsParameters as EdBls12_377_Parameters;
 use ark_mnt4_298::Parameters as MNT4_298_Parameters;
 use ark_pallas::PallasParameters;
-use std::any::TypeId;
+use ark_std::any::TypeId;
 
 macro_rules! try_from_u8 {
     ($(#[$meta:meta])* $vis:vis enum $name:ident {
@@ -13,7 +13,7 @@ macro_rules! try_from_u8 {
             $($(#[$vmeta])* $vname $(= $val)?,)*
         }
 
-        impl std::convert::TryFrom<u8> for $name {
+        impl ark_std::convert::TryFrom<u8> for $name {
             type Error = ();
 
             fn try_from(v: u8) -> Result<Self, Self::Error> {
@@ -64,7 +64,7 @@ pub mod test {
     use super::*;
     use ark_mnt4_298::{G1Affine as M298_G1Affine, G2Projective as M298_G2Projective};
     use ark_pallas::{Affine as PAffine, Projective as PProjective};
-    use std::convert::TryInto;
+    use ark_std::convert::TryInto;
 
     fn assert_u8_try_from(p: BoundaryCurves) {
         let back = (p.clone() as u8).try_into().unwrap();

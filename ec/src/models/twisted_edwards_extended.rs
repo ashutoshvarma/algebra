@@ -1,6 +1,6 @@
 use crate::{
-    models::{MontgomeryModelParameters as MontgomeryParameters, TEModelParameters as Parameters},
     boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
+    models::{MontgomeryModelParameters as MontgomeryParameters, TEModelParameters as Parameters},
     AffineCurve, CurveParameters, ProjectiveCurve,
 };
 use ark_serialize::{

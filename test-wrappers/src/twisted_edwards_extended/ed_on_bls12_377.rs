@@ -1,8 +1,8 @@
 use ark_ed_on_bls12_377::{EdwardsAffine as EdAffine, EdwardsProjective as EdProjective};
 
 use ark_algebra_test_templates::{curves::*, groups::*};
+use ark_ec::{boundary::serialize, AffineCurve, ProjectiveCurve};
 use ark_native_boundary::wrapped::{GroupAffine, GroupProjective};
-use ark_ec::{AffineCurve, ProjectiveCurve, boundary::serialize};
 use ark_std::rand::Rng;
 use ark_std::test_rng;
 
