@@ -1,9 +1,10 @@
-use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve};
+use ark_ec::{boundary::serialize, AffineCurve, PairingEngine, ProjectiveCurve};
 use ark_ff::{Field, One, PrimeField};
 use ark_mnt4_298::{Fq4, Fr, MNT4_298};
+use ark_native_boundary::wrapped;
 use ark_std::rand::Rng;
 use ark_std::test_rng;
-
+use ark_std::UniformRand;
 use ark_algebra_test_templates::{curves::*, groups::*};
 
 type G1Projective = wrapped::G1Projective<MNT4_298>;
@@ -14,8 +15,8 @@ type WrappedMNT4_298 = wrapped::EngineWrapper<MNT4_298>;
 
 #[test]
 fn test_projective_noncanonical_serialization() {
-    wrapped::serialize::tests::test_serialize_projective::<G1Projective>();
-    wrapped::serialize::tests::test_serialize_projective::<G2Projective>();
+    serialize::tests::test_serialize_projective::<G1Projective>();
+    serialize::tests::test_serialize_projective::<G2Projective>();
 }
 
 #[test]

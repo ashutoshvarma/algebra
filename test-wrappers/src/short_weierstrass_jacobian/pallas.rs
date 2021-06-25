@@ -1,5 +1,4 @@
-use ark_ec::AffineCurve;
-use ark_native_boundary::wrapped;
+use ark_ec::{boundary::serialize, AffineCurve};
 use ark_native_boundary::wrapped::{GroupAffine, GroupProjective};
 use ark_pallas::{Affine, Projective};
 use ark_std::{rand::Rng, test_rng};
@@ -10,7 +9,7 @@ type PallasProjective = GroupProjective<Projective>;
 
 #[test]
 fn test_projective_noncanonical_serialization() {
-    wrapped::serialize::tests::test_serialize_projective::<PallasProjective>();
+    serialize::tests::test_serialize_projective::<PallasProjective>();
 }
 
 #[test]

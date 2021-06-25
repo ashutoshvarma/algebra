@@ -20,7 +20,6 @@ pub trait NonCanonicalDeserialize {
         Self: Sized;
 }
 
-#[cfg(test)]
 pub mod tests {
     use crate::ProjectiveCurve;
     use ark_std::{io::Cursor, test_rng};
