@@ -314,25 +314,21 @@ where
     fn batch_normalization(v: &mut [Self]) {
         // This is slow, should be changed to a tested "unsafe" impl after
         // bench and profiling
-        let mut inner_curves = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
         match Self::get_native_boundary() {
             Some(nb) => {
                 // get the curve type
                 let cp = BoundaryCurves::try_from::<C>().unwrap();
                 // alloc empty buff
-                let mut buff = Cursor::new(vec![
-                    0;
-                    inner_curves.len()
-                        * inner_curves[0]
-                            .noncanonical_serialized_size()
-                ]);
-                // serialise all inner curves
-                for i in inner_curves.iter() {
+                let mut buff = Cursor::new(vec![0; v.len() * v[0].noncanonical_serialized_size()]);
+                // serialise all curves (since serialization for wrapped and non-wrapped are same,
+                // we can just directly serializa them without unwrapping)
+                for i in v.iter() {
                     i.noncanonical_serialize_uncompressed_unchecked(&mut buff)
                         .unwrap();
                 }
 
                 // call boundary
+                // result is the serialized inner curves which are batch normalized
                 let result = &nb
                     .call(
                         CallId::ProjBN,
@@ -343,21 +339,24 @@ where
                     .unwrap()[0];
 
                 let mut raw = Cursor::new(result);
-                for i in inner_curves.iter_mut() {
-                    *i = C::noncanonical_deserialize_uncompressed_unchecked(&mut raw).unwrap();
+                for i in v.iter_mut() {
+                    i.set_wrapped(
+                        C::noncanonical_deserialize_uncompressed_unchecked(&mut raw).unwrap(),
+                    );
                 }
             }
             None => {
                 if C::get_native_fallback() {
+                    let mut inner_curves = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
                     C::batch_normalization(&mut inner_curves);
+                    v.iter_mut()
+                        .zip(inner_curves)
+                        .for_each(|(wg, g)| wg.set_wrapped(g));
                 } else {
                     panic!("No boundary available!")
                 }
             }
         }
-        v.iter_mut()
-            .zip(inner_curves)
-            .for_each(|(wg, g)| wg.set_wrapped(g));
     }
 
     fn double_in_place(&mut self) -> &mut Self {
