@@ -74,10 +74,6 @@ mod tests {
     use ark_ec::ProjectiveCurve;
 
     pub fn test_var_base_msm<G: AffineCurve>() {
-        // set DummyBoundary and disable fallback
-        G::set_native_boundary(Some(&DummyBoundary));
-        G::set_native_fallback(false);
-
         const SAMPLES: usize = 1 << 10;
         let mut rng = ark_std::test_rng();
         let v = (0..SAMPLES - 1)
@@ -87,8 +83,14 @@ mod tests {
             .map(|_| G::Projective::rand(&mut rng))
             .collect::<Vec<_>>();
         let g = <G::Projective as ProjectiveCurve>::batch_normalization_into_affine(&g);
+
+        // set DummyBoundary and disable fallback
+        G::set_native_boundary(Some(&DummyBoundary));
+        G::set_native_fallback(false);
+
         let wasm_call = msm::VariableBaseMSM::multi_scalar_mul(g.as_slice(), v.as_slice());
         let native_call = VariableBaseMSM::multi_scalar_mul(g.as_slice(), v.as_slice());
+
         assert_eq!(native_call.into_affine(), wasm_call.into_affine());
     }
 

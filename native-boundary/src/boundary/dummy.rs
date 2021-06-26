@@ -133,3 +133,41 @@ impl DummyBoundary {
         result.into_inner()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::boundary::CrossBoundary;
+    use crate::wrapped::{G1Projective, G2Projective, GroupProjective};
+    use ark_std::rand::distributions::{Distribution, Standard};
+    use ark_std::UniformRand;
+
+    pub fn test_batch_normalization_helper<G: ProjectiveCurve>()
+    where
+        Standard: Distribution<G>,
+    {
+        // set DummyBoundary and disable fallback
+        GroupProjective::<G>::set_native_boundary(Some(&DummyBoundary));
+        GroupProjective::<G>::set_native_fallback(false);
+        G::set_native_boundary(Some(&DummyBoundary));
+        G::set_native_fallback(false);
+
+        const SAMPLES: usize = 1 << 10;
+        let mut rng = ark_std::test_rng();
+        let mut g = (0..SAMPLES).map(|_| G::rand(&mut rng)).collect::<Vec<_>>();
+        let mut wg = (0..SAMPLES)
+            .map(|_| GroupProjective::<G>::rand(&mut rng))
+            .collect::<Vec<_>>();
+        let g = G::batch_normalization(&mut g);
+        let wg = GroupProjective::<G>::batch_normalization(&mut wg);
+        assert_eq!(g, wg);
+    }
+
+    #[test]
+    fn test_batch_normalization() {
+        test_batch_normalization_helper::<ark_pallas::Projective>();
+        test_batch_normalization_helper::<ark_ed_on_bls12_377::EdwardsProjective>();
+        test_batch_normalization_helper::<G1Projective<ark_mnt4_298::MNT4_298>>();
+        test_batch_normalization_helper::<G2Projective<ark_mnt4_298::MNT4_298>>();
+    }
+}
