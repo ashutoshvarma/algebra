@@ -52,7 +52,6 @@ pub trait NativeBoundary {
         id: CallId,
         args: Option<Vec<&[u8]>>,
         cp: Vec<u8>,
-        wrapped: bool,
     ) -> Result<Option<Vec<Vec<u8>>>, &'static str>;
 }
 
@@ -68,7 +67,6 @@ mod tests {
             _: CallId,
             _: Option<Vec<&[u8]>>,
             _: Vec<u8>,
-            _: bool,
         ) -> Result<Option<Vec<Vec<u8>>>, &'static str> {
             Ok(None)
         }

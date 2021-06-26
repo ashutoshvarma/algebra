@@ -40,7 +40,7 @@ try_from_u8! {
 }
 
 impl BoundaryCurves {
-    pub fn try_from_wrapped<T: CurveParameters>() -> Result<Self, ()> {
+    pub fn try_from<T: CurveParameters>() -> Result<Self, ()> {
         let id = TypeId::of::<T::Parameters>();
         // Pallas
         if id == TypeId::of::<PallasParameters>() {
@@ -79,7 +79,7 @@ pub mod test {
     }
 
     fn assert_from_wrapped<C: CurveParameters>(p: BoundaryCurves) {
-        let param = BoundaryCurves::try_from_wrapped::<C>().unwrap();
+        let param = BoundaryCurves::try_from::<C>().unwrap();
         assert_eq!(param, p);
     }
 

@@ -1,4 +1,5 @@
-// use crate::boundary::CrossBoundary;
+use crate::boundary::{CallId, CrossBoundary};
+use crate::curves::BoundaryCurves;
 use ark_ec::{
     boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
     AffineCurve, CurveParameters, PairingEngine, ProjectiveCurve,
@@ -14,7 +15,7 @@ use ark_std::rand::{
 };
 use ark_std::{
     fmt::{Display, Formatter, Result as FmtResult},
-    io::{Read, Result as IoResult, Write},
+    io::{Cursor, Read, Result as IoResult, Write},
     ops::{Add, AddAssign, MulAssign, Neg, Sub, SubAssign},
     vec::Vec,
 };
@@ -145,7 +146,6 @@ impl<C: AffineCurve> AffineCurve for GroupAffine<C>
 where
     Standard: Distribution<C::Projective>,
 {
-    const WRAPPED: bool = true;
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
     type ScalarField = C::ScalarField;
@@ -293,7 +293,6 @@ where
     Standard: Distribution<C>,
     // Self: From<C::Affine>
 {
-    const WRAPPED: bool = true;
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
     type ScalarField = C::ScalarField;
@@ -315,20 +314,50 @@ where
     fn batch_normalization(v: &mut [Self]) {
         // This is slow, should be changed to a tested "unsafe" impl after
         // bench and profiling
-        // match C::get_native_boundary() {
-        //     Some(nb) => {}
-        //     None => {
-        //         if C::get_native_fallback() {
         let mut inner_curves = v.iter().map(|p| *p.wrapped()).collect::<Vec<_>>();
-        C::batch_normalization(&mut inner_curves);
+        match Self::get_native_boundary() {
+            Some(nb) => {
+                // get the curve type
+                let cp = BoundaryCurves::try_from::<C>().unwrap();
+                // alloc empty buff
+                let mut buff = Cursor::new(vec![
+                    0;
+                    inner_curves.len()
+                        * inner_curves[0]
+                            .noncanonical_serialized_size()
+                ]);
+                // serialise all inner curves
+                for i in inner_curves.iter() {
+                    i.noncanonical_serialize_uncompressed_unchecked(&mut buff)
+                        .unwrap();
+                }
+
+                // call boundary
+                let result = &nb
+                    .call(
+                        CallId::ProjBN,
+                        Some(vec![&buff.into_inner()]),
+                        vec![cp as u8],
+                    )
+                    .unwrap()
+                    .unwrap()[0];
+
+                let mut raw = Cursor::new(result);
+                for i in inner_curves.iter_mut() {
+                    *i = C::noncanonical_deserialize_uncompressed_unchecked(&mut raw).unwrap();
+                }
+            }
+            None => {
+                if C::get_native_fallback() {
+                    C::batch_normalization(&mut inner_curves);
+                } else {
+                    panic!("No boundary available!")
+                }
+            }
+        }
         v.iter_mut()
             .zip(inner_curves)
             .for_each(|(wg, g)| wg.set_wrapped(g));
-        //         } else {
-        //             panic!("No boundary available!")
-        //         }
-        //     }
-        // }
     }
 
     fn double_in_place(&mut self) -> &mut Self {
