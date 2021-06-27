@@ -16,7 +16,7 @@ impl VariableBaseMSM {
     ) -> G::Projective {
         match G::get_native_boundary() {
             Some(nb) => {
-                let cp = BoundaryCurves::try_from::<G>().unwrap();
+                let cp = BoundaryCurves::try_from_curve::<G>().unwrap();
 
                 let size = ark_std::cmp::min(bases.len(), scalars.len());
                 let scalars = &scalars[..size];

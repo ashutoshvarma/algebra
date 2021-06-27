@@ -3,44 +3,23 @@ use ark_ed_on_bls12_377::EdwardsParameters as EdBls12_377_Parameters;
 use ark_mnt4_298::Parameters as MNT4_298_Parameters;
 use ark_pallas::PallasParameters;
 use ark_std::any::TypeId;
+use num_enum::IntoPrimitive;
+use num_enum::TryFromPrimitive;
 
-macro_rules! try_from_u8 {
-    ($(#[$meta:meta])* $vis:vis enum $name:ident {
-        $($(#[$vmeta:meta])* $vname:ident $(= $val:expr)?,)*
-    }) => {
-        $(#[$meta])*
-        $vis enum $name {
-            $($(#[$vmeta])* $vname $(= $val)?,)*
-        }
-
-        impl ark_std::convert::TryFrom<u8> for $name {
-            type Error = ();
-
-            fn try_from(v: u8) -> Result<Self, Self::Error> {
-                match v {
-                    $(x if x == $name::$vname as u8 => Ok($name::$vname),)*
-                    _ => Err(()),
-                }
-            }
-        }
-    }
-}
-
-try_from_u8! {
-    #[derive(Debug, PartialEq, Clone, Copy)]
-    pub enum BoundaryCurves {
-        // ark_pallas
-        Pallas = 1,
-        // ark_ed_on_bls12_377
-        EdBls12_377 = 2,
-        // ark_mnt4_298
-        MNT4_298G1 = 3,
-        MNT4_298G2 = 4,
-    }
+#[derive(Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive, Clone, Copy)]
+#[repr(u8)]
+pub enum BoundaryCurves {
+    // ark_pallas
+    Pallas,
+    // ark_ed_on_bls12_377
+    EdBls12_377,
+    // ark_mnt4_298
+    MNT4_298G1,
+    MNT4_298G2,
 }
 
 impl BoundaryCurves {
-    pub fn try_from<T: CurveParameters>() -> Result<Self, ()> {
+    pub fn try_from_curve<T: CurveParameters>() -> Result<Self, ()> {
         let id = TypeId::of::<T::Parameters>();
         // Pallas
         if id == TypeId::of::<PallasParameters>() {
@@ -79,7 +58,7 @@ pub mod test {
     }
 
     fn assert_from_wrapped<C: CurveParameters>(p: BoundaryCurves) {
-        let param = BoundaryCurves::try_from::<C>().unwrap();
+        let param = BoundaryCurves::try_from_curve::<C>().unwrap();
         assert_eq!(param, p);
     }
 
