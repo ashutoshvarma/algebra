@@ -2,6 +2,7 @@ use ark_algebra_test_templates::{curves::*, groups::*};
 use ark_ec::{boundary::serialize, AffineCurve, PairingEngine, ProjectiveCurve};
 use ark_ff::{Field, One, PrimeField};
 use ark_mnt4_298::{Fq4, Fr, MNT4_298};
+use ark_native_boundary::boundary::CrossBoundary;
 use ark_native_boundary::wrapped;
 use ark_std::rand::Rng;
 use ark_std::test_rng;
@@ -13,6 +14,11 @@ type G1Affine = wrapped::G1Affine<MNT4_298>;
 type G2Affine = wrapped::G2Affine<MNT4_298>;
 type WrappedMNT4_298 = wrapped::EngineWrapper<MNT4_298>;
 
+fn enable_fallback() {
+    G1Projective::set_native_fallback(true);
+    G1Affine::set_native_fallback(true);
+}
+
 #[test]
 fn test_projective_noncanonical_serialization() {
     serialize::tests::test_serialize_projective::<G1Projective>();
@@ -21,6 +27,7 @@ fn test_projective_noncanonical_serialization() {
 
 #[test]
 fn test_g1_projective_curve() {
+    enable_fallback();
     curve_tests::<G1Projective>();
 
     // sw_tests::<g1::Parameters>();
@@ -43,6 +50,7 @@ fn test_g1_generator() {
 
 #[test]
 fn test_g2_projective_curve() {
+    enable_fallback();
     curve_tests::<G2Projective>();
 
     // sw_tests::<g2::Parameters>();
