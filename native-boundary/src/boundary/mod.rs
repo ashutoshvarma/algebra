@@ -5,13 +5,14 @@ pub mod handler;
 pub use handler::SimpleNativeCallHandler;
 
 use crate::curves::BoundaryCurves;
+use ark_ec::boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
 use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::{convert::TryInto, vec::Vec};
 use crossbeam_utils::atomic::AtomicCell;
 use num_enum::IntoPrimitive;
 use num_enum::TryFromPrimitive;
 
-impl<T> CrossBoundary for T {}
+impl<T: NonCanonicalDeserialize + NonCanonicalSerialize> CrossBoundary for T {}
 
 pub trait CrossBoundary {
     #[allow(nonstandard_style)]
@@ -133,8 +134,8 @@ pub trait NativeBoundary {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ark_pallas::Affine;
 
-    struct Curve;
     struct NB;
     impl NativeBoundary for NB {
         fn call(
@@ -149,10 +150,10 @@ mod tests {
 
     #[test]
     fn test_set_boundary() {
-        Curve::set_native_boundary(Some(&NB));
-        Curve::get_native_boundary().unwrap();
+        Affine::set_native_boundary(Some(&NB));
+        Affine::get_native_boundary().unwrap();
 
-        Curve::set_native_fallback(true);
-        assert_eq!(Curve::get_native_fallback(), true);
+        Affine::set_native_fallback(true);
+        assert_eq!(Affine::get_native_fallback(), true);
     }
 }
