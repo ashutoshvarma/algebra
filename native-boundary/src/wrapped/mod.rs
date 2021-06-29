@@ -165,8 +165,8 @@ where
 
 impl<C: CrossAffine> AffineCurve for GroupAffine<C>
 where
-    Standard: Distribution<C::Projective>,
     C::Projective: CrossProjective,
+    Standard: Distribution<C::Projective>,
 {
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
@@ -242,6 +242,32 @@ where
     #[inline]
     fn default() -> Self {
         GroupAffine(C::default())
+    }
+}
+
+impl<C: CrossAffine> core::iter::Sum<Self> for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+    Standard: Distribution<C::Projective>,
+{
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(GroupProjective::<C::Projective>::zero(), |sum, x| {
+            sum.add_mixed(&x)
+        })
+        .into()
+    }
+}
+
+impl<'a, C: CrossAffine> core::iter::Sum<&'a Self> for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+    Standard: Distribution<C::Projective>,
+{
+    fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
+        iter.fold(GroupProjective::<C::Projective>::zero(), |sum, x| {
+            sum.add_mixed(&x)
+        })
+        .into()
     }
 }
 

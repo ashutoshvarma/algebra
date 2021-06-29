@@ -136,19 +136,19 @@ impl<'a, P: TEModelParameters> core::ops::Sub<&'a mut Self> for GroupAffine<Grou
     }
 }
 
-#[allow(unused_qualifications)]
-impl<P: TEModelParameters> core::iter::Sum<Self> for GroupAffine<GroupAffineED<P>> {
-    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Self::zero(), core::ops::Add::add)
-    }
-}
+// #[allow(unused_qualifications)]
+// impl<P: TEModelParameters> core::iter::Sum<Self> for GroupAffine<GroupAffineED<P>> {
+//     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+//         iter.fold(Self::zero(), core::ops::Add::add)
+//     }
+// }
 
-#[allow(unused_qualifications)]
-impl<'a, P: TEModelParameters> core::iter::Sum<&'a Self> for GroupAffine<GroupAffineED<P>> {
-    fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
-        iter.fold(Self::zero(), core::ops::Add::add)
-    }
-}
+// #[allow(unused_qualifications)]
+// impl<'a, P: TEModelParameters> core::iter::Sum<&'a Self> for GroupAffine<GroupAffineED<P>> {
+//     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
+//         iter.fold(Self::zero(), core::ops::Add::add)
+//     }
+// }
 
 #[allow(unused_qualifications)]
 impl<P: TEModelParameters> core::ops::AddAssign<Self> for GroupAffine<GroupAffineED<P>> {
