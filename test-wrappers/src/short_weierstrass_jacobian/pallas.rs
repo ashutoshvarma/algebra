@@ -1,4 +1,5 @@
-use ark_ec::{boundary::serialize, AffineCurve};
+use ark_ec::AffineCurve;
+use ark_native_boundary::serialize;
 use ark_native_boundary::wrapped::{GroupAffine, GroupProjective};
 use ark_pallas::{Affine, Projective};
 use ark_std::{rand::Rng, test_rng};
