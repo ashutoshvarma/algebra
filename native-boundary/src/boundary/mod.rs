@@ -18,17 +18,28 @@ use crossbeam_utils::atomic::AtomicCell;
 use num_enum::IntoPrimitive;
 use num_enum::TryFromPrimitive;
 
+// This trait implies a AffineCurve capable of crossing boundary
 pub trait CrossAffine: AffineCurve + CrossBoundary
 where
     <Self as AffineCurve>::Projective: CrossProjective,
 {
 }
 
+// This trait implies a ProjectiveCurve capable of crossing boundary
 pub trait CrossProjective: ProjectiveCurve + CrossBoundary
 where
     <Self as ProjectiveCurve>::Affine: CrossAffine,
 {
 }
+
+// This trait adds a associate type which will be used to match curves types
+pub trait CurveParameters {
+    type Parameters: ModelParameters;
+}
+
+//
+// Default Implementations
+//
 
 impl<T: AffineCurve + CrossBoundary> CrossAffine for T where
     <T as AffineCurve>::Projective: CrossBoundary
@@ -37,10 +48,6 @@ impl<T: AffineCurve + CrossBoundary> CrossAffine for T where
 impl<T: ProjectiveCurve + CrossBoundary> CrossProjective for T where
     <T as ProjectiveCurve>::Affine: CrossBoundary
 {
-}
-
-pub trait CurveParameters {
-    type Parameters: ModelParameters;
 }
 
 impl<P: SWModelParameters> CurveParameters for SWAffine<P> {
@@ -59,6 +66,9 @@ impl<P: TEModelParameters> CurveParameters for EDProjective<P> {
     type Parameters = P;
 }
 
+//
+// CrossBoundary - expose methods to set/get native boundary for a type
+//
 impl<T: NonCanonicalDeserialize + NonCanonicalSerialize + CurveParameters> CrossBoundary for T {}
 
 pub trait CrossBoundary: NonCanonicalDeserialize + NonCanonicalSerialize + CurveParameters {
