@@ -2,10 +2,11 @@ use ark_ed_on_bls12_377::{EdwardsAffine as EdAffine, EdwardsProjective as EdProj
 
 use ark_algebra_test_templates::{curves::*, groups::*};
 use ark_ec::{AffineCurve, ProjectiveCurve};
-use ark_native_boundary::serialize;
-use ark_native_boundary::wrapped::{GroupAffine, GroupProjective};
-use ark_std::rand::Rng;
-use ark_std::test_rng;
+use ark_native_boundary::{
+    serialize,
+    wrapped::{GroupAffine, GroupProjective},
+};
+use ark_std::{rand::Rng, test_rng};
 
 type EdwardsProjective = GroupProjective<EdProjective>;
 type EdwardsAffine = GroupAffine<EdAffine>;

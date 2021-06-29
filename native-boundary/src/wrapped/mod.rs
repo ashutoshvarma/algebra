@@ -1,20 +1,22 @@
-use crate::boundary::{CallId, CrossAffine, CrossBoundary, CrossProjective, CurveParameters};
-use crate::curves::BoundaryCurves;
-use crate::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
+use crate::{
+    boundary::{CallId, CrossAffine, CrossBoundary, CrossProjective, CurveParameters},
+    curves::BoundaryCurves,
+    serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
+};
 use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve};
 use ark_ff::{
     bytes::{FromBytes, ToBytes},
     fields::PrimeField,
 };
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
-use ark_std::rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
 use ark_std::{
     fmt::{Display, Formatter, Result as FmtResult},
     io::{Cursor, Read, Result as IoResult, Write},
     ops::{Add, AddAssign, MulAssign, Neg, Sub, SubAssign},
+    rand::{
+        distributions::{Distribution, Standard},
+        Rng,
+    },
     vec::Vec,
 };
 use derive_more::Display;
@@ -398,8 +400,8 @@ where
                 let cp = BoundaryCurves::try_from_curve::<C>().unwrap();
                 // alloc empty buff
                 let mut buff = Cursor::new(vec![0; v.len() * v[0].noncanonical_serialized_size()]);
-                // serialise all curves (since serialization for wrapped and non-wrapped are same,
-                // we can just directly serializa them without unwrapping)
+                // serialise all curves (since serialization for wrapped and non-wrapped are
+                // same, we can just directly serializa them without unwrapping)
                 for i in v.iter() {
                     i.noncanonical_serialize_uncompressed_unchecked(&mut buff)
                         .unwrap();

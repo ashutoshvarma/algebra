@@ -1,14 +1,17 @@
 use crate::wrapped::Wrapped;
 pub use crate::wrapped::{GroupAffine, GroupProjective};
-use ark_ec::models::twisted_edwards_extended::{
-    GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
+use ark_ec::models::{
+    twisted_edwards_extended::{
+        GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
+    },
+    TEModelParameters,
 };
-use ark_ec::models::TEModelParameters;
-use ark_ff::Zero;
-use ark_std::ops::{Add, AddAssign, MulAssign, Sub, SubAssign};
-use ark_std::rand::{
-    distributions::{Distribution, Standard},
-    Rng,
+use ark_std::{
+    ops::{Add, AddAssign, MulAssign, Sub, SubAssign},
+    rand::{
+        distributions::{Distribution, Standard},
+        Rng,
+    },
 };
 
 // wrap inherent methods for short weierstrass group affine
@@ -17,14 +20,6 @@ impl<P: TEModelParameters> GroupAffine<GroupAffineED<P>> {
     fn scale_by_cofactor(&self) -> GroupProjective<GroupProjectiveED<P>> {
         GroupProjective(GroupAffineED::<P>::scale_by_cofactor(self.wrapped()))
     }
-
-    // #[allow(dead_code)]
-    // pub(crate) fn mul_bits(
-    //     &self,
-    //     bits: impl Iterator<Item = bool>,
-    // ) -> GroupProjective<GroupProjectiveED<P>> {
-    //     GroupProjective(GroupAffineED::<P>::mul_bits(self.wrapped(), bits))
-    // }
 
     #[allow(dead_code)]
     fn get_point_from_x(x: P::BaseField, greatest: bool) -> Option<Self> {
@@ -97,8 +92,8 @@ where
 }
 
 // // ark_ff::impl_additive_ops_from_ref!(_GroupAffine, TEModelParameters);
-// `Add` in above macro conflicts as its already been impl for generic GroupAffine
-// So we have to manually impl rest of traits here
+// `Add` in above macro conflicts as its already been impl for generic
+// GroupAffine So we have to manually impl rest of traits here
 
 #[allow(unused_qualifications)]
 impl<'a, P: TEModelParameters> core::ops::Add<&'a mut Self> for GroupAffine<GroupAffineED<P>> {
@@ -135,20 +130,6 @@ impl<'a, P: TEModelParameters> core::ops::Sub<&'a mut Self> for GroupAffine<Grou
         result
     }
 }
-
-// #[allow(unused_qualifications)]
-// impl<P: TEModelParameters> core::iter::Sum<Self> for GroupAffine<GroupAffineED<P>> {
-//     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-//         iter.fold(Self::zero(), core::ops::Add::add)
-//     }
-// }
-
-// #[allow(unused_qualifications)]
-// impl<'a, P: TEModelParameters> core::iter::Sum<&'a Self> for GroupAffine<GroupAffineED<P>> {
-//     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
-//         iter.fold(Self::zero(), core::ops::Add::add)
-//     }
-// }
 
 #[allow(unused_qualifications)]
 impl<P: TEModelParameters> core::ops::AddAssign<Self> for GroupAffine<GroupAffineED<P>> {
@@ -196,10 +177,6 @@ mod group_impl {
 
         #[inline]
         fn double_in_place(&mut self) -> &mut Self {
-            // let mut tmp = *self;
-            // tmp += &*self;
-            // *self = tmp;
-            // self
             self.mut_wrapped().double_in_place();
             self
         }

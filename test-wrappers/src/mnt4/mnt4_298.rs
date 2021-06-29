@@ -2,12 +2,8 @@ use ark_algebra_test_templates::{curves::*, groups::*};
 use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve};
 use ark_ff::{Field, One, PrimeField};
 use ark_mnt4_298::{Fq4, Fr, MNT4_298};
-use ark_native_boundary::boundary::CrossBoundary;
-use ark_native_boundary::serialize;
-use ark_native_boundary::wrapped;
-use ark_std::rand::Rng;
-use ark_std::test_rng;
-use ark_std::UniformRand;
+use ark_native_boundary::{boundary::CrossBoundary, serialize, wrapped};
+use ark_std::{rand::Rng, test_rng, UniformRand};
 
 type G1Projective = wrapped::G1Projective<MNT4_298>;
 type G2Projective = wrapped::G2Projective<MNT4_298>;

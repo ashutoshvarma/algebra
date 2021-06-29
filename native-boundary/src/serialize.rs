@@ -1,10 +1,8 @@
-use ark_ec::models::short_weierstrass_jacobian::{
-    GroupAffine as SWAffine, GroupProjective as SWProjective,
+use ark_ec::models::{
+    short_weierstrass_jacobian::{GroupAffine as SWAffine, GroupProjective as SWProjective},
+    twisted_edwards_extended::{GroupAffine as EDAffine, GroupProjective as EDProjective},
+    SWModelParameters, TEModelParameters,
 };
-use ark_ec::models::twisted_edwards_extended::{
-    GroupAffine as EDAffine, GroupProjective as EDProjective,
-};
-use ark_ec::models::{SWModelParameters, TEModelParameters};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 use ark_std::io::{Read, Write};
 
@@ -24,7 +22,6 @@ pub trait NonCanonicalDeserialize {
         Self: Sized;
 }
 
-//
 // Immplementations for SW & ED curves
 //
 

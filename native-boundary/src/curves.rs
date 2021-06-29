@@ -4,8 +4,7 @@ use ark_ed_on_bls12_377::EdwardsParameters as EdBls12_377_Parameters;
 use ark_mnt4_298::Parameters as MNT4_298_Parameters;
 use ark_pallas::PallasParameters;
 use ark_std::any::TypeId;
-use num_enum::IntoPrimitive;
-use num_enum::TryFromPrimitive;
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 #[derive(Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive, Clone, Copy)]
 #[repr(u8)]

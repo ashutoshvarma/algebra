@@ -1,5 +1,7 @@
-use crate::boundary::{CrossAffine, CrossProjective, NativeCallHandler};
-use crate::serialize::NonCanonicalSerialize;
+use crate::{
+    boundary::{CrossAffine, CrossProjective, NativeCallHandler},
+    serialize::NonCanonicalSerialize,
+};
 use ark_ec::{msm::VariableBaseMSM, ProjectiveCurve};
 use ark_ff::{PrimeField, Zero};
 use ark_serialize::CanonicalDeserialize;

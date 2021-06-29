@@ -31,11 +31,15 @@ impl NativeBoundary for DummyBoundary {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::boundary::{CrossAffine, CrossBoundary, CrossProjective};
-    use crate::wrapped::{G1Projective, G2Projective, GroupProjective};
+    use crate::{
+        boundary::{CrossAffine, CrossBoundary, CrossProjective},
+        wrapped::{G1Projective, G2Projective, GroupProjective},
+    };
     use ark_ec::ProjectiveCurve;
-    use ark_std::rand::distributions::{Distribution, Standard};
-    use ark_std::UniformRand;
+    use ark_std::{
+        rand::distributions::{Distribution, Standard},
+        UniformRand,
+    };
 
     pub fn test_batch_normalization_helper<G: CrossProjective>()
     where

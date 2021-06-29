@@ -4,19 +4,20 @@ pub use dummy::DummyBoundary;
 pub mod handler;
 pub use handler::SimpleNativeCallHandler;
 
-use crate::curves::BoundaryCurves;
-use crate::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
-use ark_ec::models::short_weierstrass_jacobian::{
-    GroupAffine as SWAffine, GroupProjective as SWProjective,
+use crate::{
+    curves::BoundaryCurves,
+    serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
 };
-use ark_ec::models::twisted_edwards_extended::{
-    GroupAffine as EDAffine, GroupProjective as EDProjective,
+use ark_ec::{
+    models::{
+        short_weierstrass_jacobian::{GroupAffine as SWAffine, GroupProjective as SWProjective},
+        twisted_edwards_extended::{GroupAffine as EDAffine, GroupProjective as EDProjective},
+    },
+    AffineCurve, ModelParameters, ProjectiveCurve, SWModelParameters, TEModelParameters,
 };
-use ark_ec::{AffineCurve, ModelParameters, ProjectiveCurve, SWModelParameters, TEModelParameters};
 use ark_std::{convert::TryInto, vec::Vec};
 use crossbeam_utils::atomic::AtomicCell;
-use num_enum::IntoPrimitive;
-use num_enum::TryFromPrimitive;
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 // This trait implies a AffineCurve capable of crossing boundary
 pub trait CrossAffine: AffineCurve + CrossBoundary
@@ -37,7 +38,6 @@ pub trait CurveParameters {
     type Parameters: ModelParameters;
 }
 
-//
 // Default Implementations
 //
 
@@ -66,7 +66,6 @@ impl<P: TEModelParameters> CurveParameters for EDProjective<P> {
     type Parameters = P;
 }
 
-//
 // CrossBoundary - expose methods to set/get native boundary for a type
 //
 impl<T: NonCanonicalDeserialize + NonCanonicalSerialize + CurveParameters> CrossBoundary for T {}
