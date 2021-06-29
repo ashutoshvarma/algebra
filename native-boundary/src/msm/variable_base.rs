@@ -1,6 +1,6 @@
 use crate::boundary::{CallId, CrossBoundary};
 use crate::curves::BoundaryCurves;
-use ark_ec::boundary::serialize::NonCanonicalDeserialize;
+use crate::serialize::NonCanonicalDeserialize;
 use ark_ff::prelude::*;
 use ark_serialize::CanonicalSerialize;
 use ark_std::{io::Cursor, vec::Vec};
@@ -10,10 +10,13 @@ use ark_ec::{msm, AffineCurve};
 pub struct VariableBaseMSM;
 
 impl VariableBaseMSM {
-    pub fn multi_scalar_mul<G: AffineCurve>(
+    pub fn multi_scalar_mul<G: AffineCurve + CrossBoundary>(
         bases: &[G],
         scalars: &[<G::ScalarField as PrimeField>::BigInt],
-    ) -> G::Projective {
+    ) -> G::Projective
+    where
+        G::Projective: CrossBoundary,
+    {
         match G::get_native_boundary() {
             Some(nb) => {
                 let cp = BoundaryCurves::try_from_curve::<G>().unwrap();
@@ -67,13 +70,16 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::boundary::CrossBoundary;
     use crate::boundary::DummyBoundary;
+    use crate::boundary::{CrossAffine, CrossBoundary, CrossProjective};
     use crate::wrapped::{G1Affine, G2Affine, GroupAffine};
     use ark_ec::msm;
     use ark_ec::ProjectiveCurve;
 
-    pub fn test_var_base_msm<G: AffineCurve>() {
+    pub fn test_var_base_msm<G: CrossAffine>()
+    where
+        G::Projective: CrossProjective,
+    {
         const SAMPLES: usize = 1 << 10;
         let mut rng = ark_std::test_rng();
         let v = (0..SAMPLES - 1)

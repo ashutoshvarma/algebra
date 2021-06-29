@@ -5,16 +5,63 @@ pub mod handler;
 pub use handler::SimpleNativeCallHandler;
 
 use crate::curves::BoundaryCurves;
-use ark_ec::boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
-use ark_ec::{AffineCurve, ProjectiveCurve};
+use crate::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
+use ark_ec::models::short_weierstrass_jacobian::{
+    GroupAffine as SWAffine, GroupProjective as SWProjective,
+};
+use ark_ec::models::twisted_edwards_extended::{
+    GroupAffine as EDAffine, GroupProjective as EDProjective,
+};
+use ark_ec::{AffineCurve, ModelParameters, ProjectiveCurve, SWModelParameters, TEModelParameters};
 use ark_std::{convert::TryInto, vec::Vec};
 use crossbeam_utils::atomic::AtomicCell;
 use num_enum::IntoPrimitive;
 use num_enum::TryFromPrimitive;
 
-impl<T: NonCanonicalDeserialize + NonCanonicalSerialize> CrossBoundary for T {}
+pub trait CrossAffine: AffineCurve + CrossBoundary
+where
+    <Self as AffineCurve>::Projective: CrossProjective,
+{
+}
 
-pub trait CrossBoundary {
+pub trait CrossProjective: ProjectiveCurve + CrossBoundary
+where
+    <Self as ProjectiveCurve>::Affine: CrossAffine,
+{
+}
+
+impl<T: AffineCurve + CrossBoundary> CrossAffine for T where
+    <T as AffineCurve>::Projective: CrossBoundary
+{
+}
+impl<T: ProjectiveCurve + CrossBoundary> CrossProjective for T where
+    <T as ProjectiveCurve>::Affine: CrossBoundary
+{
+}
+
+pub trait CurveParameters {
+    type Parameters: ModelParameters;
+}
+
+impl<P: SWModelParameters> CurveParameters for SWAffine<P> {
+    type Parameters = P;
+}
+
+impl<P: SWModelParameters> CurveParameters for SWProjective<P> {
+    type Parameters = P;
+}
+
+impl<P: TEModelParameters> CurveParameters for EDAffine<P> {
+    type Parameters = P;
+}
+
+impl<P: TEModelParameters> CurveParameters for EDProjective<P> {
+    type Parameters = P;
+}
+
+impl<T: NonCanonicalDeserialize + NonCanonicalSerialize + CurveParameters> CrossBoundary for T {}
+
+pub trait CrossBoundary: NonCanonicalDeserialize + NonCanonicalSerialize + CurveParameters {
     #[allow(nonstandard_style)]
     fn NATIVE_BOUNDARY() -> &'static AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> {
         static STATIC: AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> =
@@ -111,14 +158,18 @@ pub trait NativeCallHandler {
     }
 
     #[must_use]
-    fn handle_vb_multi_scalar_mul<G: AffineCurve>(
+    fn handle_vb_multi_scalar_mul<G: CrossAffine>(
         &self,
         sbases: &[u8],
         sscalars: &[u8],
-    ) -> Result<Vec<u8>, ()>;
+    ) -> Result<Vec<u8>, ()>
+    where
+        G::Projective: CrossProjective;
 
     #[must_use]
-    fn handle_batch_normalization<G: ProjectiveCurve>(&self, v: &[u8]) -> Result<Vec<u8>, ()>;
+    fn handle_batch_normalization<G: CrossProjective>(&self, v: &[u8]) -> Result<Vec<u8>, ()>
+    where
+        G::Affine: CrossAffine;
 }
 
 pub trait NativeBoundary {

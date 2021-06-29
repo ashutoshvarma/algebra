@@ -1,17 +1,20 @@
-use crate::boundary::NativeCallHandler;
-use ark_ec::boundary::serialize::NonCanonicalSerialize;
-use ark_ec::{msm::VariableBaseMSM, AffineCurve, ProjectiveCurve};
+use crate::boundary::{CrossAffine, CrossProjective, NativeCallHandler};
+use crate::serialize::NonCanonicalSerialize;
+use ark_ec::{msm::VariableBaseMSM, ProjectiveCurve};
 use ark_ff::{PrimeField, Zero};
 use ark_serialize::CanonicalDeserialize;
 use ark_std::{io::Cursor, vec::Vec};
 
 pub struct SimpleNativeCallHandler;
 impl NativeCallHandler for SimpleNativeCallHandler {
-    fn handle_vb_multi_scalar_mul<G: AffineCurve>(
+    fn handle_vb_multi_scalar_mul<G: CrossAffine>(
         &self,
         sbases: &[u8],
         sscalars: &[u8],
-    ) -> Result<Vec<u8>, ()> {
+    ) -> Result<Vec<u8>, ()>
+    where
+        G::Projective: CrossProjective,
+    {
         // TODO: remove this simple hack to get the serialised size
         let len = sbases.len() / G::noncanonical_serialized_size(&G::zero());
         let mut bases_buff = Cursor::new(sbases);
@@ -43,7 +46,10 @@ impl NativeCallHandler for SimpleNativeCallHandler {
         Ok(result.into_inner())
     }
 
-    fn handle_batch_normalization<G: ProjectiveCurve>(&self, v: &[u8]) -> Result<Vec<u8>, ()> {
+    fn handle_batch_normalization<G: CrossProjective>(&self, v: &[u8]) -> Result<Vec<u8>, ()>
+    where
+        G::Affine: CrossAffine,
+    {
         // TODO: remove this simple hack to get the serialised size
         let size = G::noncanonical_serialized_size(&G::zero());
         let len = v.len() / size;

@@ -1,4 +1,5 @@
-use ark_ec::{models::mnt4::MNT4Parameters, CurveParameters};
+use crate::boundary::CurveParameters;
+use ark_ec::models::mnt4::MNT4Parameters;
 use ark_ed_on_bls12_377::EdwardsParameters as EdBls12_377_Parameters;
 use ark_mnt4_298::Parameters as MNT4_298_Parameters;
 use ark_pallas::PallasParameters;

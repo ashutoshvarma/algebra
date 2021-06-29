@@ -1,9 +1,7 @@
-use crate::boundary::{CallId, CrossBoundary};
+use crate::boundary::{CallId, CrossAffine, CrossBoundary, CrossProjective, CurveParameters};
 use crate::curves::BoundaryCurves;
-use ark_ec::{
-    boundary::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
-    AffineCurve, CurveParameters, PairingEngine, ProjectiveCurve,
-};
+use crate::serialize::{NonCanonicalDeserialize, NonCanonicalSerialize};
+use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve};
 use ark_ff::{
     bytes::{FromBytes, ToBytes},
     fields::PrimeField,
@@ -23,6 +21,8 @@ use derive_more::Display;
 use num_traits::Zero;
 use zeroize::Zeroize;
 
+mod macros;
+
 pub mod short_weierstrass_jacobian;
 pub mod twisted_edwards_extended;
 
@@ -35,7 +35,10 @@ pub trait Wrapped {
     fn new_wrap(inner: Self::WrapTarget) -> Self;
 }
 
-impl<C: AffineCurve> Wrapped for GroupAffine<C> {
+impl<C: CrossAffine> Wrapped for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     type WrapTarget = C;
     fn wrapped(&self) -> &Self::WrapTarget {
         &(self.0)
@@ -51,7 +54,10 @@ impl<C: AffineCurve> Wrapped for GroupAffine<C> {
     }
 }
 
-impl<C: ProjectiveCurve> Wrapped for GroupProjective<C> {
+impl<C: CrossProjective> Wrapped for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     type WrapTarget = C;
     fn wrapped(&self) -> &Self::WrapTarget {
         &(self.0)
@@ -69,27 +75,25 @@ impl<C: ProjectiveCurve> Wrapped for GroupProjective<C> {
 
 // #######################################################################
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
-// #[derive(Derivative)]
-// #[derivative(
-//     Copy(bound = "C: AffineCurve"),
-//     Clone(bound = "C: AffineCurve"),
-//     Debug(bound = "C: AffineCurve"),
-//     Hash(bound = "C: AffineCurve"),
-//     // PartialEq(bound = "C: AffineCurve"),
-//     // Eq(bound = "C: AffineCurve")
-// )]
 #[repr(transparent)]
-pub struct GroupAffine<C: AffineCurve>(pub C);
+pub struct GroupAffine<C: CrossAffine>(pub C)
+where
+    C::Projective: CrossProjective;
 
-impl<C: AffineCurve> Display for GroupAffine<C> {
+impl<C: CrossAffine> Display for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         <C as Display>::fmt(self.wrapped(), f)
     }
 }
 
-impl<A: AffineCurve, P: ProjectiveCurve> PartialEq<GroupProjective<P>> for GroupAffine<A>
+impl<A: CrossAffine, P: CrossProjective> PartialEq<GroupProjective<P>> for GroupAffine<A>
 where
     A: PartialEq<P>,
+    A::Projective: CrossProjective,
+    P::Affine: CrossAffine,
 {
     fn eq(&self, other: &GroupProjective<P>) -> bool {
         // self.into_projective() == *other
@@ -97,29 +101,40 @@ where
     }
 }
 
-impl<A: AffineCurve, P: ProjectiveCurve> PartialEq<GroupAffine<A>> for GroupProjective<P>
+impl<A: CrossAffine, P: CrossProjective> PartialEq<GroupAffine<A>> for GroupProjective<P>
 where
     P: PartialEq<A>,
+    A::Projective: CrossProjective,
+    P::Affine: CrossAffine,
 {
     fn eq(&self, other: &GroupAffine<A>) -> bool {
         P::eq(self.wrapped(), other.wrapped())
     }
 }
 
-impl<C: AffineCurve> GroupAffine<C> {
+impl<C: CrossAffine> GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[allow(dead_code)]
     fn new(inner: C) -> Self {
         GroupAffine(inner)
     }
 }
 
-impl<C: AffineCurve> Zeroize for GroupAffine<C> {
+impl<C: CrossAffine> Zeroize for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     fn zeroize(&mut self) {
         C::zeroize(self.mut_wrapped())
     }
 }
 
-impl<C: AffineCurve> Zero for GroupAffine<C> {
+impl<C: CrossAffine> Zero for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[inline]
     fn zero() -> Self {
         GroupAffine(C::zero())
@@ -131,20 +146,27 @@ impl<C: AffineCurve> Zero for GroupAffine<C> {
     }
 }
 
-impl<C: AffineCurve> Add<Self> for GroupAffine<C> {
+impl<C: CrossAffine> Add<Self> for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     type Output = Self;
     fn add(self, other: Self) -> Self {
         GroupAffine(C::add(*self.wrapped(), *other.wrapped()))
     }
 }
 
-impl<C: AffineCurve> CurveParameters for GroupAffine<C> {
+impl<C: CrossAffine> CurveParameters for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     type Parameters = C::Parameters;
 }
 
-impl<C: AffineCurve> AffineCurve for GroupAffine<C>
+impl<C: CrossAffine> AffineCurve for GroupAffine<C>
 where
     Standard: Distribution<C::Projective>,
+    C::Projective: CrossProjective,
 {
     const COFACTOR: &'static [u64] = C::COFACTOR;
     type BaseField = C::BaseField;
@@ -178,7 +200,10 @@ where
     }
 }
 
-impl<C: AffineCurve> Neg for GroupAffine<C> {
+impl<C: CrossAffine> Neg for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     type Output = Self;
 
     #[inline]
@@ -187,14 +212,20 @@ impl<C: AffineCurve> Neg for GroupAffine<C> {
     }
 }
 
-impl<C: AffineCurve> ToBytes for GroupAffine<C> {
+impl<C: CrossAffine> ToBytes for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[inline]
     fn write<W: Write>(&self, writer: W) -> IoResult<()> {
         C::write(self.wrapped(), writer)
     }
 }
 
-impl<C: AffineCurve> FromBytes for GroupAffine<C> {
+impl<C: CrossAffine> FromBytes for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[inline]
     fn read<R: Read>(reader: R) -> IoResult<Self> {
         match C::read(reader) {
@@ -204,7 +235,10 @@ impl<C: AffineCurve> FromBytes for GroupAffine<C> {
     }
 }
 
-impl<C: AffineCurve> Default for GroupAffine<C> {
+impl<C: CrossAffine> Default for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[inline]
     fn default() -> Self {
         GroupAffine(C::default())
@@ -213,19 +247,15 @@ impl<C: AffineCurve> Default for GroupAffine<C> {
 
 // GroupProjective STARTs
 #[derive(Eq, PartialEq, Display, Copy, Clone, Debug, Hash)]
-// #[derive(Derivative)]
-// #[derivative(
-//     Copy(bound = "C: ProjectiveCurve"),
-//     Clone(bound = "C: ProjectiveCurve"),
-//     Debug(bound = "C: ProjectiveCurve"),
-//     Hash(bound = "C: ProjectiveCurve")
-// )]
 #[repr(transparent)]
-pub struct GroupProjective<C: ProjectiveCurve>(pub C);
+pub struct GroupProjective<C: CrossProjective>(pub C)
+where
+    C::Affine: CrossAffine;
 
-impl<C: ProjectiveCurve> Distribution<GroupProjective<C>> for Standard
+impl<C: CrossProjective> Distribution<GroupProjective<C>> for Standard
 where
     Standard: Distribution<C>,
+    C::Affine: CrossAffine,
 {
     #[inline]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> GroupProjective<C> {
@@ -233,7 +263,10 @@ where
     }
 }
 
-impl<C: ProjectiveCurve + ToBytes> ToBytes for GroupProjective<C> {
+impl<C: CrossProjective + ToBytes> ToBytes for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     #[inline]
     fn write<W: Write>(&self, writer: W) -> IoResult<()> {
         // C::write(&self.0, writer)
@@ -241,7 +274,10 @@ impl<C: ProjectiveCurve + ToBytes> ToBytes for GroupProjective<C> {
     }
 }
 
-impl<C: ProjectiveCurve + FromBytes> FromBytes for GroupProjective<C> {
+impl<C: CrossProjective + FromBytes> FromBytes for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     #[inline]
     fn read<R: Read>(reader: R) -> IoResult<Self> {
         match C::read(reader) {
@@ -251,31 +287,46 @@ impl<C: ProjectiveCurve + FromBytes> FromBytes for GroupProjective<C> {
     }
 }
 
-impl<C: ProjectiveCurve + Default> Default for GroupProjective<C> {
+impl<C: CrossProjective + Default> Default for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     #[inline]
     fn default() -> Self {
         GroupProjective(C::default())
     }
 }
 
-impl<C: ProjectiveCurve> CurveParameters for GroupProjective<C> {
+impl<C: CrossProjective> CurveParameters for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     type Parameters = C::Parameters;
 }
 
-impl<C: ProjectiveCurve> GroupProjective<C> {
+impl<C: CrossProjective> GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     pub fn new(inner: C) -> Self {
         GroupProjective(inner)
     }
 }
 
-impl<C: ProjectiveCurve> Zeroize for GroupProjective<C> {
+impl<C: CrossProjective> Zeroize for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn zeroize(&mut self) {
         // self.mut_wrapped().zeroize()
         C::zeroize(&mut self.mut_wrapped())
     }
 }
 
-impl<C: ProjectiveCurve> Zero for GroupProjective<C> {
+impl<C: CrossProjective> Zero for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     #[inline]
     fn zero() -> Self {
         GroupProjective(C::zero())
@@ -288,9 +339,10 @@ impl<C: ProjectiveCurve> Zero for GroupProjective<C> {
     }
 }
 
-impl<C: ProjectiveCurve> ProjectiveCurve for GroupProjective<C>
+impl<C: CrossProjective> ProjectiveCurve for GroupProjective<C>
 where
     Standard: Distribution<C>,
+    C::Affine: CrossAffine,
     // Self: From<C::Affine>
 {
     const COFACTOR: &'static [u64] = C::COFACTOR;
@@ -370,7 +422,10 @@ where
     }
 }
 
-impl<C: ProjectiveCurve> Neg for GroupProjective<C> {
+impl<C: CrossProjective> Neg for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     type Output = Self;
 
     #[inline]
@@ -379,10 +434,15 @@ impl<C: ProjectiveCurve> Neg for GroupProjective<C> {
     }
 }
 
-// common to both sw and ed
-ark_ff::impl_additive_ops_from_ref!(GroupProjective, ProjectiveCurve);
+trait A: ProjectiveCurve + CrossBoundary {}
 
-impl<'a, C: ProjectiveCurve> Add<&'a Self> for GroupProjective<C> {
+// common to both sw and ed
+impl_additive_ops_from_wrapped_cross_projective!(GroupProjective);
+
+impl<'a, C: CrossProjective> Add<&'a Self> for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     type Output = Self;
     fn add(mut self, other: &'a Self) -> Self {
         // GroupProjective(self.wrapped().add(other))
@@ -390,14 +450,20 @@ impl<'a, C: ProjectiveCurve> Add<&'a Self> for GroupProjective<C> {
     }
 }
 
-impl<'a, C: ProjectiveCurve> AddAssign<&'a Self> for GroupProjective<C> {
+impl<'a, C: CrossProjective> AddAssign<&'a Self> for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn add_assign(&mut self, other: &'a Self) {
         // self.mut_wrapped().add_assign(other.wrapped())
         C::add_assign(self.mut_wrapped(), other.wrapped())
     }
 }
 
-impl<'a, C: ProjectiveCurve> Sub<&'a Self> for GroupProjective<C> {
+impl<'a, C: CrossProjective> Sub<&'a Self> for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     type Output = Self;
     fn sub(mut self, other: &'a Self) -> Self {
         // GroupProjective(self.wrapped().sub(other))
@@ -405,14 +471,20 @@ impl<'a, C: ProjectiveCurve> Sub<&'a Self> for GroupProjective<C> {
     }
 }
 
-impl<'a, C: ProjectiveCurve> SubAssign<&'a Self> for GroupProjective<C> {
+impl<'a, C: CrossProjective> SubAssign<&'a Self> for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn sub_assign(&mut self, other: &'a Self) {
         // self.mut_wrapped().sub_assign(other.wrapped())
         C::sub_assign(self.mut_wrapped(), other.wrapped())
     }
 }
 
-impl<C: ProjectiveCurve> MulAssign<C::ScalarField> for GroupProjective<C> {
+impl<C: CrossProjective> MulAssign<C::ScalarField> for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn mul_assign(&mut self, other: C::ScalarField) {
         self.mut_wrapped().mul_assign(other)
     }
@@ -420,25 +492,32 @@ impl<C: ProjectiveCurve> MulAssign<C::ScalarField> for GroupProjective<C> {
 
 // From and Serialize Traits
 
-impl<A: AffineCurve, P: ProjectiveCurve> From<GroupAffine<A>> for GroupProjective<P>
+impl<A: CrossAffine, P: CrossProjective> From<GroupAffine<A>> for GroupProjective<P>
 where
     P: From<A>,
+    P::Affine: CrossAffine,
+    A::Projective: CrossProjective,
 {
     fn from(p: GroupAffine<A>) -> GroupProjective<P> {
         GroupProjective(P::from(*p.wrapped()))
     }
 }
 
-impl<A: AffineCurve, P: ProjectiveCurve> From<GroupProjective<P>> for GroupAffine<A>
+impl<A: CrossAffine, P: CrossProjective> From<GroupProjective<P>> for GroupAffine<A>
 where
     A: From<P>,
+    P::Affine: CrossAffine,
+    A::Projective: CrossProjective,
 {
     fn from(p: GroupProjective<P>) -> GroupAffine<A> {
         GroupAffine(A::from(*p.wrapped()))
     }
 }
 
-impl<C: AffineCurve> CanonicalSerialize for GroupAffine<C> {
+impl<C: CrossAffine> CanonicalSerialize for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     #[inline]
     fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
         // self.wrapped().serialize()
@@ -464,7 +543,10 @@ impl<C: AffineCurve> CanonicalSerialize for GroupAffine<C> {
     }
 }
 
-impl<C: ProjectiveCurve> CanonicalSerialize for GroupProjective<C> {
+impl<C: CrossProjective> CanonicalSerialize for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     #[inline]
     fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
         // self.wrapped().serialize()
@@ -490,7 +572,10 @@ impl<C: ProjectiveCurve> CanonicalSerialize for GroupProjective<C> {
     }
 }
 
-impl<C: AffineCurve> CanonicalDeserialize for GroupAffine<C> {
+impl<C: CrossAffine> CanonicalDeserialize for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
         match C::deserialize(reader) {
             Ok(v) => Ok(GroupAffine(v)),
@@ -515,7 +600,10 @@ impl<C: AffineCurve> CanonicalDeserialize for GroupAffine<C> {
     }
 }
 
-impl<C: ProjectiveCurve> CanonicalDeserialize for GroupProjective<C> {
+impl<C: CrossProjective> CanonicalDeserialize for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
         match C::deserialize(reader) {
             Ok(v) => Ok(GroupProjective(v)),
@@ -540,7 +628,10 @@ impl<C: ProjectiveCurve> CanonicalDeserialize for GroupProjective<C> {
     }
 }
 
-impl<C: ProjectiveCurve> NonCanonicalSerialize for GroupProjective<C> {
+impl<C: CrossProjective> NonCanonicalSerialize for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
         &self,
         writer: W,
@@ -554,7 +645,10 @@ impl<C: ProjectiveCurve> NonCanonicalSerialize for GroupProjective<C> {
     }
 }
 
-impl<C: AffineCurve> NonCanonicalSerialize for GroupAffine<C> {
+impl<C: CrossAffine> NonCanonicalSerialize for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
         &self,
         writer: W,
@@ -568,7 +662,10 @@ impl<C: AffineCurve> NonCanonicalSerialize for GroupAffine<C> {
     }
 }
 
-impl<C: ProjectiveCurve> NonCanonicalDeserialize for GroupProjective<C> {
+impl<C: CrossProjective> NonCanonicalDeserialize for GroupProjective<C>
+where
+    C::Affine: CrossAffine,
+{
     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
         reader: R,
     ) -> Result<Self, SerializationError>
@@ -581,7 +678,10 @@ impl<C: ProjectiveCurve> NonCanonicalDeserialize for GroupProjective<C> {
         }
     }
 }
-impl<C: AffineCurve> NonCanonicalDeserialize for GroupAffine<C> {
+impl<C: CrossAffine> NonCanonicalDeserialize for GroupAffine<C>
+where
+    C::Projective: CrossProjective,
+{
     fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
         reader: R,
     ) -> Result<Self, SerializationError>
@@ -603,7 +703,13 @@ pub type G1Projective<E> = GroupProjective<<E as PairingEngine>::G1Projective>;
 #[derive(Clone, Debug)]
 pub struct G1Prepared<E: PairingEngine>(pub E::G1Prepared);
 
-impl<E: PairingEngine> From<G1Affine<E>> for G1Prepared<E> {
+impl<E: PairingEngine> From<G1Affine<E>> for G1Prepared<E>
+where
+    E::G1Projective: CrossProjective,
+    E::G1Affine: CrossAffine,
+    E::G2Projective: CrossProjective,
+    E::G2Affine: CrossAffine,
+{
     fn from(other: G1Affine<E>) -> Self {
         G1Prepared(E::G1Prepared::from(other.0))
     }
@@ -628,7 +734,13 @@ pub type G2Projective<E> = GroupProjective<<E as PairingEngine>::G2Projective>;
 #[derive(Clone, Debug)]
 pub struct G2Prepared<E: PairingEngine>(pub E::G2Prepared);
 
-impl<E: PairingEngine> From<G2Affine<E>> for G2Prepared<E> {
+impl<E: PairingEngine> From<G2Affine<E>> for G2Prepared<E>
+where
+    E::G1Projective: CrossProjective,
+    E::G1Affine: CrossAffine,
+    E::G2Projective: CrossProjective,
+    E::G2Affine: CrossAffine,
+{
     fn from(other: G2Affine<E>) -> Self {
         G2Prepared(E::G2Prepared::from(other.0))
     }
@@ -655,6 +767,10 @@ impl<E: PairingEngine> PairingEngine for EngineWrapper<E>
 where
     Standard: Distribution<E::G1Projective>,
     Standard: Distribution<E::G2Projective>,
+    E::G1Projective: CrossProjective,
+    E::G1Affine: CrossAffine,
+    E::G2Projective: CrossProjective,
+    E::G2Affine: CrossAffine,
 {
     type Fr = E::Fr;
     type G1Projective = G1Projective<E>;

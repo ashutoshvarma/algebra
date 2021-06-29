@@ -23,6 +23,7 @@ impl NativeBoundary for DummyBoundary {
         args: Option<Vec<&[u8]>>,
         cp: Vec<u8>,
     ) -> Result<Option<Vec<Vec<u8>>>, &'static str> {
+        // call native host exported function
         dummy_host_export_call(id.into(), args, cp)
     }
 }
@@ -30,15 +31,16 @@ impl NativeBoundary for DummyBoundary {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::boundary::CrossBoundary;
+    use crate::boundary::{CrossAffine, CrossBoundary, CrossProjective};
     use crate::wrapped::{G1Projective, G2Projective, GroupProjective};
     use ark_ec::ProjectiveCurve;
     use ark_std::rand::distributions::{Distribution, Standard};
     use ark_std::UniformRand;
 
-    pub fn test_batch_normalization_helper<G: ProjectiveCurve>()
+    pub fn test_batch_normalization_helper<G: CrossProjective>()
     where
         Standard: Distribution<G>,
+        G::Affine: CrossAffine,
     {
         // set DummyBoundary and disable fallback
         GroupProjective::<G>::set_native_boundary(Some(&DummyBoundary));
