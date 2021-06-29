@@ -7,3 +7,4 @@ pub mod boundary;
 pub mod curves;
 pub mod msm;
 pub mod wrapped;
+pub mod serialize;
