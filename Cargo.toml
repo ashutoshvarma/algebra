@@ -18,6 +18,10 @@ members = [
     "native-boundary",
     "test-wrappers"
 ]
+exclude = [
+    "ec-boundary-patch",
+    "ec-patch-example"
+]
 
 [profile.release]
 opt-level = 3
