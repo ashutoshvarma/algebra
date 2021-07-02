@@ -8,3 +8,5 @@ pub mod curves;
 pub mod msm;
 pub mod serialize;
 pub mod wrapped;
+
+pub mod curve_param;
