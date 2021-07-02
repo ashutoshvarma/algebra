@@ -1,9 +1,9 @@
 use crate::{
-    boundary::{CallId, CrossAffine, CrossBoundary, CrossProjective, CurveParameters},
+    boundary::{CallId, CrossAffine, CrossBoundary, CrossProjective, CurveParameters, CurveType},
     curves::BoundaryCurves,
     serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
 };
-use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve};
+use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve, SWModelParameters, TEModelParameters};
 use ark_ff::{
     bytes::{FromBytes, ToBytes},
     fields::PrimeField,
@@ -162,7 +162,9 @@ impl<C: CrossAffine> CurveParameters for GroupAffine<C>
 where
     C::Projective: CrossProjective,
 {
-    type Parameters = C::Parameters;
+    type SWParameters = C::SWParameters;
+    type TEParameters = C::TEParameters;
+    const TYPE: CurveType = C::TYPE;
 }
 
 impl<C: CrossAffine> AffineCurve for GroupAffine<C>
@@ -329,7 +331,9 @@ impl<C: CrossProjective> CurveParameters for GroupProjective<C>
 where
     C::Affine: CrossAffine,
 {
-    type Parameters = C::Parameters;
+    type SWParameters = C::SWParameters;
+    type TEParameters = C::TEParameters;
+    const TYPE: CurveType = C::TYPE;
 }
 
 impl<C: CrossProjective> GroupProjective<C>

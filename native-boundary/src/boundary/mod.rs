@@ -7,6 +7,7 @@ pub use handler::SimpleNativeCallHandler;
 use crate::{
     curves::BoundaryCurves,
     serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
+    curve_param::*
 };
 use ark_ec::{
     models::{
@@ -33,9 +34,15 @@ where
 {
 }
 
+pub enum CurveType {
+    SW,
+    ED,
+}
 // This trait adds a associate type which will be used to match curves types
 pub trait CurveParameters {
-    type Parameters: ModelParameters;
+    type SWParameters: SWModelParameters;
+    type TEParameters: TEModelParameters;
+    const TYPE: CurveType;
 }
 
 // Default Implementations
@@ -51,19 +58,31 @@ impl<T: ProjectiveCurve + CrossBoundary> CrossProjective for T where
 }
 
 impl<P: SWModelParameters> CurveParameters for SWAffine<P> {
-    type Parameters = P;
+    type SWParameters = P;
+    // Just a placeholder
+    type TEParameters = crate::curve_param::ed_on_bls12_377::EdwardsParameters;
+    const TYPE: CurveType = CurveType::SW;
 }
 
 impl<P: SWModelParameters> CurveParameters for SWProjective<P> {
-    type Parameters = P;
+    type SWParameters = P;
+    // Just a placeholder
+    type TEParameters = crate::curve_param::ed_on_bls12_377::EdwardsParameters;
+    const TYPE: CurveType = CurveType::SW;
 }
 
 impl<P: TEModelParameters> CurveParameters for EDAffine<P> {
-    type Parameters = P;
+    type TEParameters = P;
+    // Just a placeholder
+    type SWParameters = crate::curve_param::pallas::PallasParameters;
+    const TYPE: CurveType = CurveType::ED;
 }
 
 impl<P: TEModelParameters> CurveParameters for EDProjective<P> {
-    type Parameters = P;
+    type TEParameters = P;
+    // Just a placeholder
+    type SWParameters = crate::curve_param::pallas::PallasParameters;
+    const TYPE: CurveType = CurveType::ED;
 }
 
 // CrossBoundary - expose methods to set/get native boundary for a type
@@ -125,20 +144,20 @@ pub trait NativeCallHandler {
                 // match curve type
                 match cp[0].try_into().unwrap() {
                     BoundaryCurves::Pallas => Ok(Some(vec![self
-                        .handle_vb_multi_scalar_mul::<ark_pallas::Affine>(vb_args[0], vb_args[1])
+                        .handle_vb_multi_scalar_mul::<pallas::Affine>(vb_args[0], vb_args[1])
                         .unwrap()])),
                     BoundaryCurves::MNT4_298G1 => Ok(Some(vec![self
-                        .handle_vb_multi_scalar_mul::<ark_mnt4_298::g1::G1Affine>(
+                        .handle_vb_multi_scalar_mul::<mnt4_298::g1::G1Affine>(
                             vb_args[0], vb_args[1],
                         )
                         .unwrap()])),
                     BoundaryCurves::MNT4_298G2 => Ok(Some(vec![self
-                        .handle_vb_multi_scalar_mul::<ark_mnt4_298::g2::G2Affine>(
+                        .handle_vb_multi_scalar_mul::<mnt4_298::g2::G2Affine>(
                             vb_args[0], vb_args[1],
                         )
                         .unwrap()])),
                     BoundaryCurves::EdBls12_377 => Ok(Some(vec![self
-                        .handle_vb_multi_scalar_mul::<ark_ed_on_bls12_377::EdwardsAffine>(
+                        .handle_vb_multi_scalar_mul::<ed_on_bls12_377::EdwardsAffine>(
                             vb_args[0], vb_args[1],
                         )
                         .unwrap()])),
@@ -149,16 +168,16 @@ pub trait NativeCallHandler {
                 // match curve type
                 match cp[0].try_into().unwrap() {
                     BoundaryCurves::Pallas => Ok(Some(vec![self
-                        .handle_batch_normalization::<ark_pallas::Projective>(args)
+                        .handle_batch_normalization::<pallas::Projective>(args)
                         .unwrap()])),
                     BoundaryCurves::MNT4_298G1 => Ok(Some(vec![self
-                        .handle_batch_normalization::<ark_mnt4_298::g1::G1Projective>(args)
+                        .handle_batch_normalization::<mnt4_298::g1::G1Projective>(args)
                         .unwrap()])),
                     BoundaryCurves::MNT4_298G2 => Ok(Some(vec![self
-                        .handle_batch_normalization::<ark_mnt4_298::g2::G2Projective>(args)
+                        .handle_batch_normalization::<mnt4_298::g2::G2Projective>(args)
                         .unwrap()])),
                     BoundaryCurves::EdBls12_377 => Ok(Some(vec![self
-                        .handle_batch_normalization::<ark_ed_on_bls12_377::EdwardsProjective>(args)
+                        .handle_batch_normalization::<ed_on_bls12_377::EdwardsProjective>(args)
                         .unwrap()])),
                 }
             }

@@ -1,8 +1,8 @@
-use crate::boundary::CurveParameters;
+use crate::boundary::{CurveParameters, CurveType};
+use crate::curve_param::*;
 use ark_ec::models::mnt4::MNT4Parameters;
-use ark_ed_on_bls12_377::EdwardsParameters as EdBls12_377_Parameters;
-use ark_mnt4_298::Parameters as MNT4_298_Parameters;
-use ark_pallas::PallasParameters;
+use ark_ec::{ModelParameters, SWModelParameters, TEModelParameters};
+use ark_ff::Field;
 use ark_std::any::TypeId;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
@@ -13,6 +13,9 @@ pub enum BoundaryCurves {
     Pallas,
     // ark_ed_on_bls12_377
     EdBls12_377,
+    // ark_bls12_277,
+    // Bls12_377G1,
+    // Bls12_377G2,
     // ark_mnt4_298
     MNT4_298G1,
     MNT4_298G2,
@@ -20,29 +23,55 @@ pub enum BoundaryCurves {
 
 impl BoundaryCurves {
     pub fn try_from_curve<T: CurveParameters>() -> Result<Self, ()> {
-        let id = TypeId::of::<T::Parameters>();
-        // Pallas
-        if id == TypeId::of::<PallasParameters>() {
-            Ok(BoundaryCurves::Pallas)
-        // EdBls12_377
-        } else if id == TypeId::of::<EdBls12_377_Parameters>() {
-            Ok(BoundaryCurves::EdBls12_377)
-        // MNT4_298
-        } else if id == TypeId::of::<<MNT4_298_Parameters as MNT4Parameters>::G1Parameters>() {
-            Ok(BoundaryCurves::MNT4_298G1)
-        } else if id == TypeId::of::<<MNT4_298_Parameters as MNT4Parameters>::G2Parameters>() {
-            Ok(BoundaryCurves::MNT4_298G2)
-        } else {
-            Err(())
+        match T::TYPE {
+            // SW Curves
+            CurveType::SW => {
+                // pallas
+                if compare_sw_parameters::<T::SWParameters, pallas::PallasParameters>() {
+                    Ok(BoundaryCurves::Pallas)
+                // bls12_377
+                // } else if compare_parameters::<T::Parameters, bls12_377::g1::Parameters>() {
+                //     Ok(BoundaryCurves::Bls12_377G1)
+                // } else if compare_parameters::<T::Parameters, bls12_377::g2::Parameters>() {
+                //     Ok(BoundaryCurves::Bls12_377G2)
+                // mnt4_298
+                } else if compare_sw_parameters::<T::SWParameters, mnt4_298::g1::Parameters>() {
+                    Ok(BoundaryCurves::MNT4_298G1)
+                } else if compare_sw_parameters::<T::SWParameters, mnt4_298::g2::Parameters>() {
+                    Ok(BoundaryCurves::MNT4_298G2)
+                } else {
+                    Err(())
+                }
+            }
+            CurveType::ED => {
+                // ed_on_bls12_377
+                if compare_ed_parameters::<T::TEParameters, ed_on_bls12_377::EdwardsParameters>() {
+                    Ok(BoundaryCurves::EdBls12_377)
+                } else {
+                    Err(())
+                }
+            }
         }
     }
+}
+
+pub fn compare_sw_parameters<T: SWModelParameters, U: SWModelParameters>() -> bool {
+    let model = T::BaseField::characteristic() == U::BaseField::characteristic()
+        && T::ScalarField::characteristic() == U::ScalarField::characteristic();
+
+    model && T::COFACTOR == U::COFACTOR
+}
+
+pub fn compare_ed_parameters<T: TEModelParameters, U: TEModelParameters>() -> bool {
+    let model = T::BaseField::characteristic() == U::BaseField::characteristic()
+        && T::ScalarField::characteristic() == U::ScalarField::characteristic();
+
+    model && T::COFACTOR == U::COFACTOR
 }
 
 #[cfg(test)]
 pub mod test {
     use super::*;
-    use ark_mnt4_298::{G1Affine as M298_G1Affine, G2Projective as M298_G2Projective};
-    use ark_pallas::{Affine as PAffine, Projective as PProjective};
     use ark_std::convert::TryInto;
 
     fn assert_u8_try_from(p: BoundaryCurves) {
@@ -64,10 +93,16 @@ pub mod test {
 
     #[test]
     fn test_from_wrapped() {
-        assert_from_wrapped::<PAffine>(BoundaryCurves::Pallas);
-        assert_from_wrapped::<PProjective>(BoundaryCurves::Pallas);
+        // pallas
+        assert_from_wrapped::<ark_pallas::Affine>(BoundaryCurves::Pallas);
+        assert_from_wrapped::<ark_pallas::Projective>(BoundaryCurves::Pallas);
+        // ed_on_bls12_377
+        assert_from_wrapped::<ark_ed_on_bls12_377::EdwardsAffine>(BoundaryCurves::EdBls12_377);
+        assert_from_wrapped::<ark_ed_on_bls12_377::EdwardsProjective>(BoundaryCurves::EdBls12_377);
         // mnt4_298
-        assert_from_wrapped::<M298_G1Affine>(BoundaryCurves::MNT4_298G1);
-        assert_from_wrapped::<M298_G2Projective>(BoundaryCurves::MNT4_298G2);
+        assert_from_wrapped::<ark_mnt4_298::G1Affine>(BoundaryCurves::MNT4_298G1);
+        assert_from_wrapped::<ark_mnt4_298::G1Projective>(BoundaryCurves::MNT4_298G1);
+        assert_from_wrapped::<ark_mnt4_298::G2Affine>(BoundaryCurves::MNT4_298G2);
+        assert_from_wrapped::<ark_mnt4_298::G2Projective>(BoundaryCurves::MNT4_298G2);
     }
 }
