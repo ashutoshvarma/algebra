@@ -1,7 +1,7 @@
 use ark_ec::models::mnt4::{MNT4Parameters, MNT4};
 use ark_ff::{biginteger::BigInteger320, field_new, Fp2};
 
-use crate::curve_param::mnt4_298::{Fq, Fq2, Fq2Parameters, Fq4Parameters, Fr};
+use crate::curves::mnt4_298::{Fq, Fq2, Fq2Parameters, Fq4Parameters, Fr};
 
 pub mod g1;
 pub mod g2;

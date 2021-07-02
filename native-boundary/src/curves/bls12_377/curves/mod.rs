@@ -5,7 +5,7 @@ use ark_ec::{
 
 pub mod g1;
 pub mod g2;
-use crate::curve_param::bls12_377::fields::*;
+use crate::curves::bls12_377::fields::*;
 
 
 pub struct Parameters;

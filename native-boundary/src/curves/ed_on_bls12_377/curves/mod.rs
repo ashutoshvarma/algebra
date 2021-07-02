@@ -1,4 +1,4 @@
-use crate::curve_param::ed_on_bls12_377::{fq::Fq, fr::Fr};
+use crate::curves::ed_on_bls12_377::{fq::Fq, fr::Fr};
 use ark_ec::{
     models::{ModelParameters, MontgomeryModelParameters, TEModelParameters},
     twisted_edwards_extended::{GroupAffine, GroupProjective},

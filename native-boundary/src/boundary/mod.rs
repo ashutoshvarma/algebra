@@ -5,9 +5,8 @@ pub mod handler;
 pub use handler::SimpleNativeCallHandler;
 
 use crate::{
-    curves::BoundaryCurves,
+    curves::*,
     serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
-    curve_param::*
 };
 use ark_ec::{
     models::{
@@ -60,28 +59,28 @@ impl<T: ProjectiveCurve + CrossBoundary> CrossProjective for T where
 impl<P: SWModelParameters> CurveParameters for SWAffine<P> {
     type SWParameters = P;
     // Just a placeholder
-    type TEParameters = crate::curve_param::ed_on_bls12_377::EdwardsParameters;
+    type TEParameters = crate::curves::ed_on_bls12_377::EdwardsParameters;
     const TYPE: CurveType = CurveType::SW;
 }
 
 impl<P: SWModelParameters> CurveParameters for SWProjective<P> {
     type SWParameters = P;
     // Just a placeholder
-    type TEParameters = crate::curve_param::ed_on_bls12_377::EdwardsParameters;
+    type TEParameters = crate::curves::ed_on_bls12_377::EdwardsParameters;
     const TYPE: CurveType = CurveType::SW;
 }
 
 impl<P: TEModelParameters> CurveParameters for EDAffine<P> {
     type TEParameters = P;
     // Just a placeholder
-    type SWParameters = crate::curve_param::pallas::PallasParameters;
+    type SWParameters = crate::curves::pallas::PallasParameters;
     const TYPE: CurveType = CurveType::ED;
 }
 
 impl<P: TEModelParameters> CurveParameters for EDProjective<P> {
     type TEParameters = P;
     // Just a placeholder
-    type SWParameters = crate::curve_param::pallas::PallasParameters;
+    type SWParameters = crate::curves::pallas::PallasParameters;
     const TYPE: CurveType = CurveType::ED;
 }
 

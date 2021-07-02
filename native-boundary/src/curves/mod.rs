@@ -1,10 +1,14 @@
 use crate::boundary::{CurveParameters, CurveType};
-use crate::curve_param::*;
 use ark_ec::models::mnt4::MNT4Parameters;
 use ark_ec::{ModelParameters, SWModelParameters, TEModelParameters};
 use ark_ff::Field;
 use ark_std::any::TypeId;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
+
+pub mod bls12_377;
+pub mod ed_on_bls12_377;
+pub mod mnt4_298;
+pub mod pallas;
 
 #[derive(Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive, Clone, Copy)]
 #[repr(u8)]

@@ -1,4 +1,4 @@
-use crate::curve_param::mnt4_298::{Fq, Fq2, Fq2Parameters, FQ_ONE, FQ_ZERO};
+use crate::curves::mnt4_298::{Fq, Fq2, Fq2Parameters, FQ_ONE, FQ_ZERO};
 use ark_ff::{
     field_new,
     fields::fp4::{Fp4, Fp4Parameters},

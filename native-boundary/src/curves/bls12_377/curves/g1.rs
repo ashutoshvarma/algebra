@@ -1,7 +1,7 @@
 use ark_ec::models::{ModelParameters, SWModelParameters};
 use ark_ff::{field_new, Zero};
 
-use crate::curve_param::bls12_377::{
+use crate::curves::bls12_377::{
     fields::{FQ_ONE, FQ_ZERO},
     Fq, Fr,
 };
