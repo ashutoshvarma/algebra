@@ -1,5 +1,5 @@
 use super::{fq::Fq, fr::Fr};
-use ark_ec::{
+use crate::ark_ec::{
     models::{ModelParameters, SWModelParameters},
     short_weierstrass_jacobian::{GroupAffine, GroupProjective},
 };

@@ -35,7 +35,7 @@ mod tests {
         boundary::{CrossAffine, CrossBoundary, CrossProjective},
         wrapped::{G1Projective, G2Projective, GroupProjective},
     };
-    use ark_ec::ProjectiveCurve;
+    use crate::ark_ec::ProjectiveCurve;
     use ark_std::{
         rand::distributions::{Distribution, Standard},
         UniformRand,

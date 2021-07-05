@@ -1,5 +1,5 @@
 use crate::curves::ed_on_bls12_377::{fq::Fq, fr::Fr};
-use ark_ec::{
+use crate::ark_ec::{
     models::{ModelParameters, MontgomeryModelParameters, TEModelParameters},
     twisted_edwards_extended::{GroupAffine, GroupProjective},
 };

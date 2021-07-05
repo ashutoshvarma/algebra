@@ -1,4 +1,4 @@
-use ark_ec::{
+use crate::ark_ec::{
     bls12,
     bls12::{Bls12, Bls12Parameters, TwistType},
 };

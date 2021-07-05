@@ -1,6 +1,6 @@
 use crate::boundary::{CurveParameters, CurveType};
-use ark_ec::models::mnt4::MNT4Parameters;
-use ark_ec::{ModelParameters, SWModelParameters, TEModelParameters};
+use crate::ark_ec::models::mnt4::MNT4Parameters;
+use crate::ark_ec::{ModelParameters, SWModelParameters, TEModelParameters};
 use ark_ff::Field;
 use ark_std::any::TypeId;
 use num_enum::{IntoPrimitive, TryFromPrimitive};

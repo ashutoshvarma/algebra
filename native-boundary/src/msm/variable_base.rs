@@ -7,7 +7,7 @@ use ark_ff::prelude::*;
 use ark_serialize::CanonicalSerialize;
 use ark_std::{io::Cursor, vec::Vec};
 
-use ark_ec::{msm, AffineCurve};
+use crate::ark_ec::{msm, AffineCurve};
 
 pub struct VariableBaseMSM;
 
@@ -76,7 +76,7 @@ mod tests {
         boundary::{CrossAffine, CrossProjective, DummyBoundary},
         wrapped::{G1Affine, G2Affine, GroupAffine},
     };
-    use ark_ec::{msm, ProjectiveCurve};
+    use crate::ark_ec::{msm, ProjectiveCurve};
 
     pub fn test_var_base_msm<G: CrossAffine>()
     where

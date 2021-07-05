@@ -1,6 +1,6 @@
 use crate::wrapped::Wrapped;
 pub use crate::wrapped::{GroupAffine, GroupProjective};
-use ark_ec::models::{
+use crate::ark_ec::models::{
     short_weierstrass_jacobian::{
         GroupAffine as GroupAffineSW, GroupProjective as GroupProjectiveSW,
     },

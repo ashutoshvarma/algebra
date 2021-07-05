@@ -1,4 +1,4 @@
-use ark_ec::models::{
+use crate::ark_ec::models::{
     short_weierstrass_jacobian::{GroupAffine as SWAffine, GroupProjective as SWProjective},
     twisted_edwards_extended::{GroupAffine as EDAffine, GroupProjective as EDProjective},
     SWModelParameters, TEModelParameters,
@@ -134,7 +134,7 @@ impl<P: TEModelParameters> NonCanonicalDeserialize for EDAffine<P> {
 
 pub mod tests {
     use super::*;
-    use ark_ec::ProjectiveCurve;
+    use crate::ark_ec::ProjectiveCurve;
     use ark_std::{io::Cursor, test_rng};
 
     pub const ITERATIONS: usize = 10;

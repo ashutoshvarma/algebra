@@ -1,6 +1,6 @@
 use crate::wrapped::Wrapped;
 pub use crate::wrapped::{GroupAffine, GroupProjective};
-use ark_ec::models::{
+use crate::ark_ec::models::{
     twisted_edwards_extended::{
         GroupAffine as GroupAffineED, GroupProjective as GroupProjectiveED,
     },
@@ -165,7 +165,7 @@ impl<'a, P: TEModelParameters> core::ops::SubAssign<&'a mut Self>
 
 mod group_impl {
     use super::*;
-    use ark_ec::group::Group;
+    use crate::ark_ec::group::Group;
 
     impl<P: TEModelParameters> Group for GroupAffine<GroupAffineED<P>> {
         type ScalarField = P::ScalarField;

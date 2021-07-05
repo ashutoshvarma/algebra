@@ -8,7 +8,7 @@ use crate::{
     curves::*,
     serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
 };
-use ark_ec::{
+use crate::ark_ec::{
     models::{
         short_weierstrass_jacobian::{GroupAffine as SWAffine, GroupProjective as SWProjective},
         twisted_edwards_extended::{GroupAffine as EDAffine, GroupProjective as EDProjective},

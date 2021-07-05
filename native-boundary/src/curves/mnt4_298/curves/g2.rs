@@ -1,5 +1,5 @@
 use crate::curves::mnt4_298::{Fq, Fq2, Fr, FQ_ZERO, G1_COEFF_A_NON_RESIDUE};
-use ark_ec::{
+use crate::ark_ec::{
     mnt4,
     mnt4::MNT4Parameters,
     models::{ModelParameters, SWModelParameters},

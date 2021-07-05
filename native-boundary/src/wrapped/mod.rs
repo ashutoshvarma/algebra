@@ -3,7 +3,7 @@ use crate::{
     curves::BoundaryCurves,
     serialize::{NonCanonicalDeserialize, NonCanonicalSerialize},
 };
-use ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve, SWModelParameters, TEModelParameters};
+use crate::ark_ec::{AffineCurve, PairingEngine, ProjectiveCurve, SWModelParameters, TEModelParameters};
 use ark_ff::{
     bytes::{FromBytes, ToBytes},
     fields::PrimeField,

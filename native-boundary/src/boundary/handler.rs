@@ -2,7 +2,7 @@ use crate::{
     boundary::{CrossAffine, CrossProjective, NativeCallHandler},
     serialize::NonCanonicalSerialize,
 };
-use ark_ec::{msm::VariableBaseMSM, ProjectiveCurve};
+use crate::ark_ec::{msm::VariableBaseMSM, ProjectiveCurve};
 use ark_ff::{PrimeField, Zero};
 use ark_serialize::CanonicalDeserialize;
 use ark_std::{io::Cursor, vec::Vec};
