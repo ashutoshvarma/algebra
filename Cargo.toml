@@ -14,8 +14,9 @@ members = [
     "poly-benches",
     "test-curves",
     "test-templates",
-
-    "native-boundary",
+]
+exclude = [
+    "ec-native",
     "test-wrappers"
 ]
 

@@ -14,6 +14,8 @@ extern crate derivative;
 extern crate ark_std;
 
 mod ark_ec;
+// for now simply re-export all
+pub use ark_ec::*;
 
 pub mod boundary;
 pub mod curves;
