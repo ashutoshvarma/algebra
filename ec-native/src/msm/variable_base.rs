@@ -21,7 +21,7 @@ impl VariableBaseMSM {
     {
         match G::get_native_boundary() {
             Some(nb) => {
-                let cp = BoundaryCurves::try_from_curve::<G>().unwrap();
+                let cp = BoundaryCurves::try_from_affine::<G>().unwrap();
 
                 let size = ark_std::cmp::min(bases.len(), scalars.len());
                 let scalars = &scalars[..size];
@@ -72,11 +72,11 @@ impl VariableBaseMSM {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ark_ec::{msm, ProjectiveCurve};
     use crate::{
         boundary::{CrossAffine, CrossProjective, DummyBoundary},
         wrapped::{G1Affine, G2Affine, GroupAffine},
     };
-    use crate::ark_ec::{msm, ProjectiveCurve};
 
     pub fn test_var_base_msm<G: CrossAffine>()
     where

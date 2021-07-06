@@ -401,7 +401,7 @@ where
         match Self::get_native_boundary() {
             Some(nb) => {
                 // get the curve type
-                let cp = BoundaryCurves::try_from_curve::<C>().unwrap();
+                let cp = BoundaryCurves::try_from_projective::<C>().unwrap();
                 // alloc empty buff
                 let mut buff = Cursor::new(vec![0; v.len() * v[0].noncanonical_serialized_size()]);
                 // serialise all curves (since serialization for wrapped and non-wrapped are
