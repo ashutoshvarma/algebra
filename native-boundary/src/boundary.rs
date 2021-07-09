@@ -1,40 +1,35 @@
 use ark_std::vec::Vec;
-use crossbeam_utils::atomic::AtomicCell;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
+
+#[allow(nonstandard_style)]
+static mut _BOUNDARY: Option<&'static (dyn NativeBoundary)> = None;
+#[allow(nonstandard_style)]
+static mut _BOUNDARY_FALLBACK: bool = false;
 
 pub struct Boundary;
 impl Boundary {
-    #[allow(nonstandard_style)]
-    fn NATIVE_BOUNDARY() -> &'static AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> {
-        static STATIC: AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> =
-            AtomicCell::new(None);
-        &STATIC
-    }
-
-    #[allow(nonstandard_style)]
-    fn NATIVE_FALLBACK() -> &'static AtomicCell<bool> {
-        static STATIC: AtomicCell<bool> = AtomicCell::new(false);
-        &STATIC
-    }
-
     #[allow(dead_code)]
-    pub fn set_native_boundary(nb: Option<&'static (dyn NativeBoundary + Sync)>) {
-        Self::NATIVE_BOUNDARY().store(nb);
+    pub fn set_native_boundary(nb: Option<&'static (dyn NativeBoundary)>) {
+        unsafe {
+            _BOUNDARY = nb;
+        }
     }
 
     #[allow(dead_code)]
     pub fn set_native_fallback(fall: bool) {
-        Self::NATIVE_FALLBACK().store(fall);
+        unsafe {
+            _BOUNDARY_FALLBACK = fall;
+        }
     }
 
     #[allow(dead_code)]
-    pub fn get_native_boundary() -> Option<&'static (dyn NativeBoundary + Sync)> {
-        Self::NATIVE_BOUNDARY().load()
+    pub fn get_native_boundary() -> Option<&'static (dyn NativeBoundary)> {
+        unsafe { _BOUNDARY }
     }
 
     #[allow(dead_code)]
     pub fn get_native_fallback() -> bool {
-        Self::NATIVE_FALLBACK().load()
+        unsafe { _BOUNDARY_FALLBACK }
     }
 }
 
