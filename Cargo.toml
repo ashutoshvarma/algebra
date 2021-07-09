@@ -17,7 +17,8 @@ members = [
 ]
 exclude = [
     "ec-native",
-    "test-wrappers"
+    "test-wrappers",
+    "native-boundary"
 ]
 
 [profile.release]
