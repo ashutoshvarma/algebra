@@ -8,5 +8,4 @@ edition = "2018"
 
 [dependencies]
 ark-std = { version = "^0.3.0", default-features = false }
-crossbeam-utils = {version = "0.8.5", default-features = false}
 num_enum = "0.5.1"

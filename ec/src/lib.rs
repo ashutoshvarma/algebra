@@ -19,10 +19,11 @@ use ark_ff::{
     fields::{Field, PrimeField, SquareRootField},
     UniformRand,
 };
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, SerializationError};
 use ark_std::{
     fmt::{Debug, Display},
     hash::Hash,
+    io::{Read, Write},
     ops::{Add, AddAssign, MulAssign, Neg, Sub, SubAssign},
     vec::Vec,
 };
@@ -37,6 +38,25 @@ pub mod group;
 pub mod msm;
 
 pub mod wnaf;
+
+#[cfg(feature = "boundary")]
+use boundary::*;
+
+pub trait NonCanonicalSerialize {
+    fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+        &self,
+        writer: W,
+    ) -> Result<(), SerializationError>;
+    fn noncanonical_serialized_size(&self) -> usize;
+}
+
+pub trait NonCanonicalDeserialize {
+    fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+        reader: R,
+    ) -> Result<Self, SerializationError>
+    where
+        Self: Sized;
+}
 
 pub trait PairingEngine: Sized + 'static + Copy + Debug + Sync + Send + Eq + PartialEq {
     /// This is the scalar field of the G1/G2 groups.
@@ -123,6 +143,8 @@ pub trait ProjectiveCurve:
     + FromBytes
     + CanonicalSerialize
     + CanonicalDeserialize
+    + NonCanonicalSerialize
+    + NonCanonicalDeserialize
     + Copy
     + Clone
     + Default

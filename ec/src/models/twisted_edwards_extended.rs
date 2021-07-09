@@ -1,6 +1,6 @@
 use crate::{
     models::{MontgomeryModelParameters as MontgomeryParameters, TEModelParameters as Parameters},
-    AffineCurve, ProjectiveCurve,
+    AffineCurve, NonCanonicalDeserialize, NonCanonicalSerialize, ProjectiveCurve,
 };
 use ark_serialize::{
     CanonicalDeserialize, CanonicalDeserializeWithFlags, CanonicalSerialize,
@@ -848,5 +848,39 @@ where
     #[inline]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         GroupAffine::from(*self).to_field_elements()
+    }
+}
+
+impl<P: Parameters> NonCanonicalSerialize for GroupProjective<P> {
+    fn noncanonical_serialize_uncompressed_unchecked<W: Write>(
+        &self,
+        mut writer: W,
+    ) -> Result<(), SerializationError> {
+        self.x.serialize_uncompressed(&mut writer)?;
+        self.y.serialize_uncompressed(&mut writer)?;
+        self.t.serialize_uncompressed(&mut writer)?;
+        self.z.serialize_uncompressed(&mut writer)?;
+        Ok(())
+    }
+
+    fn noncanonical_serialized_size(&self) -> usize {
+        self.x.uncompressed_size()
+            + self.y.uncompressed_size()
+            + self.t.uncompressed_size()
+            + self.z.uncompressed_size()
+    }
+}
+
+impl<P: Parameters> NonCanonicalDeserialize for GroupProjective<P> {
+    fn noncanonical_deserialize_uncompressed_unchecked<R: Read>(
+        mut reader: R,
+    ) -> Result<Self, SerializationError> {
+        let x: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let y: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let t: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+        let z: P::BaseField = CanonicalDeserialize::deserialize_unchecked(&mut reader)?;
+
+        let p = Self::new(x, y, t, z);
+        Ok(p)
     }
 }
