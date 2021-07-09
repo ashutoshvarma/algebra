@@ -2,12 +2,8 @@ use ark_std::vec::Vec;
 use crossbeam_utils::atomic::AtomicCell;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-//
-// CrossBoundary - expose methods to set/get native boundary for a type
-//
-impl<T> CrossBoundary for T {}
-
-pub trait CrossBoundary {
+pub struct Boundary;
+impl Boundary {
     #[allow(nonstandard_style)]
     fn NATIVE_BOUNDARY() -> &'static AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> {
         static STATIC: AtomicCell<Option<&'static (dyn NativeBoundary + Sync)>> =
@@ -21,18 +17,23 @@ pub trait CrossBoundary {
         &STATIC
     }
 
-    fn set_native_boundary(nb: Option<&'static (dyn NativeBoundary + Sync)>) {
+    #[allow(dead_code)]
+    pub fn set_native_boundary(nb: Option<&'static (dyn NativeBoundary + Sync)>) {
         Self::NATIVE_BOUNDARY().store(nb);
     }
 
-    fn set_native_fallback(fall: bool) {
+    #[allow(dead_code)]
+    pub fn set_native_fallback(fall: bool) {
         Self::NATIVE_FALLBACK().store(fall);
     }
 
-    fn get_native_boundary() -> Option<&'static (dyn NativeBoundary + Sync)> {
+    #[allow(dead_code)]
+    pub fn get_native_boundary() -> Option<&'static (dyn NativeBoundary + Sync)> {
         Self::NATIVE_BOUNDARY().load()
     }
-    fn get_native_fallback() -> bool {
+
+    #[allow(dead_code)]
+    pub fn get_native_fallback() -> bool {
         Self::NATIVE_FALLBACK().load()
     }
 }
@@ -62,7 +63,6 @@ pub trait NativeBoundary {
 mod tests {
     use super::*;
 
-    struct Curve;
     struct NB;
     impl NativeBoundary for NB {
         fn call(
@@ -77,10 +77,10 @@ mod tests {
 
     #[test]
     fn test_set_boundary() {
-        Curve::set_native_boundary(Some(&NB));
-        Curve::get_native_boundary().unwrap();
+        Boundary::set_native_boundary(Some(&NB));
+        Boundary::get_native_boundary().unwrap();
 
-        Curve::set_native_fallback(true);
-        assert_eq!(Curve::get_native_fallback(), true);
+        Boundary::set_native_fallback(true);
+        assert_eq!(Boundary::get_native_fallback(), true);
     }
 }
